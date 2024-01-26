@@ -37,7 +37,7 @@ We are working hard on transitioning all of our connectors to this repository. I
 To install the connectors, run the following command:
 
 ```bash
-npm install @mendable/data-connectors-private
+npm install @mendable/data-connectors
 ```
 
 ## Usage
@@ -45,7 +45,7 @@ npm install @mendable/data-connectors-private
 To use these connectors, you need to create a data connector with the provider of your choice. Here is an example:
 
 ```typescript
-import { createDataConnector } from "@mendable/data-connectors-private";
+import { createDataConnector } from "@mendable/data-connectors";
 
 const webDataConnector = createDataConnector({
   provider: "web-scraper",
@@ -64,7 +64,7 @@ const documents = await webDataConnector.getDocuments();
 For data connectors that require some sort of authorization such as Google Drive one of the following methods can be used:
 
 ```typescript
-import { createDataConnector } from "@mendable/data-connectors-private";
+import { createDataConnector } from "@mendable/data-connectors";
 
 const googleDriveDataConnector = createDataConnector({
   provider: "google-drive",
