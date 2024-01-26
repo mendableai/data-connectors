@@ -105,26 +105,16 @@ The output of the data connectors is a Document object. The structure of the Doc
 
 ```typescript
 export class Document {
-    id?: string; // The unique identifier of the document
     content: string; // The content of the document
+    provider: string; // The provider of the document
+    id?: string; // The unique identifier of the document
     createdAt?: Date; // The date when the document was created
     updatedAt?: Date; // The date when the document was last updated
     type?: string; // The type of the document
-    provider: string; // The provider of the document
     metadata: {
-        sourceURL?: string, // The source URL of the document
+        sourceURL?: string, // The source URL of the document, optional but should almost always contain.
         [key: string]: any; // Any additional metadata associated with the document
     }
 }
 ```
-
-Each field in the Document object is explained below:
-
-- `id`: This is an optional field. If present, it represents the unique identifier of the document.
-- `content`: This field contains the content of the document.
-- `createdAt`: This is an optional field. If present, it represents the date when the document was created.
-- `updatedAt`: This is an optional field. If present, it represents the date when the document was last updated.
-- `type`: This is an optional field. If present, it represents the type of the document.
-- `provider`: This field contains the provider of the document.
-- `metadata`: This field contains any additional metadata associated with the document. It includes an optional `sourceURL` field, which, if present, represents the source URL of the document. Any other metadata can be added as key-value pairs.
 
