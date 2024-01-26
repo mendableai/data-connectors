@@ -7,8 +7,11 @@ dotenv.config();
 
 type Mode = 'video-urls' | 'channel';
 
-export type YoutubeInputOptions = {
+export type YoutubeAuthorizeOptions = {
   access_token: string;
+}
+
+export type YoutubeInputOptions = {
   urls: string[];
   mode: Mode;
 }
@@ -20,6 +23,7 @@ export interface NangoAuthorizationOptions {
 
 export interface YoutubeOptions
   extends YoutubeInputOptions,
+    YoutubeAuthorizeOptions,
     NangoAuthorizationOptions {}
 
 export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
