@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="mendable" height="150px" src="https://github.com/mendableai/data-connectors/assets/mendable-logo">
+  <img alt="mendable" height="150px" src="https://github.com/mendableai/data-connectors/assets/mendable-logo.png">
 </div>
 
 # LLM Ready Data Connectors
