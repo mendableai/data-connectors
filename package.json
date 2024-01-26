@@ -1,5 +1,5 @@
 {
-    "name": "@mendable/data-connectors-private",
+    "name": "@mendable/data-connectors",
     "version": "0.0.1",
     "description": "Data connectors for LLMs. Made by Mendable.ai",
     "main": "dist/index.js",
