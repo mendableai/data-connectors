@@ -22,12 +22,11 @@ This repository contains a collection of data connectors built by Mendable AI. T
 ## Available Connectors
 
 The following connectors are currently available:
-
-✅ Text
-✅ Web Scraper (single urls, sitemap)
-✅ Zendesk
-🔄 Google Drive (In progress)
-🔄 Confluence (In progress)
+- ✅ Text
+- ✅ Web Scraper (single urls, sitemap)
+- ✅ Zendesk
+- 🔄 Google Drive (In progress)
+- 🔄 Confluence (In progress)
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
 
