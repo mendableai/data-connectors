@@ -4,7 +4,8 @@
 
 # LLM Ready Data Connectors
 
-This repository contains a collection of data connectors built by Mendable AI. These connectors are designed to output data in a specific format suitable for LLMs.
+This repository contains a collection of data connectors built by [Mendable AI](https://mendable.ai/?ref=data-connectors). These connectors are designed to output data in a specific format suitable for LLMs vectorization. 
+
 
 ## Key Features
 - 🛠️ Easy Integration: Quick setup for immediate use
@@ -31,6 +32,13 @@ The following connectors are currently available:
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
 
+## Installation
+
+To install the connectors, run the following command:
+
+```bash
+npm install @mendable/data-connectors-private
+```
 
 ## Usage
 
@@ -90,3 +98,33 @@ GOOGLE_DRIVE_REDIRECT_URI=<>
 SCRAPING_BEE_API_KEY=<>
 NANGO_CONNECTION_ID_TEST=<>
 ```
+
+### Output Format
+
+The output of the data connectors is a Document object. The structure of the Document object is as follows:
+
+```typescript
+export class Document {
+    id?: string; // The unique identifier of the document
+    content: string; // The content of the document
+    createdAt?: Date; // The date when the document was created
+    updatedAt?: Date; // The date when the document was last updated
+    type?: string; // The type of the document
+    provider: string; // The provider of the document
+    metadata: {
+        sourceURL?: string, // The source URL of the document
+        [key: string]: any; // Any additional metadata associated with the document
+    }
+}
+```
+
+Each field in the Document object is explained below:
+
+- `id`: This is an optional field. If present, it represents the unique identifier of the document.
+- `content`: This field contains the content of the document.
+- `createdAt`: This is an optional field. If present, it represents the date when the document was created.
+- `updatedAt`: This is an optional field. If present, it represents the date when the document was last updated.
+- `type`: This is an optional field. If present, it represents the type of the document.
+- `provider`: This field contains the provider of the document.
+- `metadata`: This field contains any additional metadata associated with the document. It includes an optional `sourceURL` field, which, if present, represents the source URL of the document. Any other metadata can be added as key-value pairs.
+
