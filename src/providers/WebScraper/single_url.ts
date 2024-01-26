@@ -9,7 +9,7 @@ dotenv.config();
 async function scrapWithScrapingBee(url: string): Promise<string | null> {
   try {
     const client = new ScrapingBeeClient(process.env.SCRAPING_BEE_API_KEY);
-    let response = await client.get({
+    const response = await client.get({
       url: url,
       params: { timeout: 70000 },
       headers: { "ScrapingService-Request": "TRUE" },
@@ -21,8 +21,8 @@ async function scrapWithScrapingBee(url: string): Promise<string | null> {
       );
       return null;
     }
-    var decoder = new TextDecoder();
-    var text = decoder.decode(response.data);
+    const decoder = new TextDecoder();
+    const text = decoder.decode(response.data);
     return text;
   } catch (error) {
     console.error(`Error scraping with Scraping Bee: ${error}`);

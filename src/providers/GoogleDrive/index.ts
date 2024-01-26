@@ -31,6 +31,9 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
   private access_token: string = "";
 
   constructor() {
+    if (!process.env.NANGO_SECRET_KEY) {
+      throw new Error("Nango secret key is required");
+    }
     this.nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
   }
 
@@ -46,7 +49,7 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     const CLIENT_ID = process.env.GOOGLE_DRIVE_CLIENT_ID;
     const CLIENT_SECRET = process.env.GOOGLE_DRIVE_CLIENT_SECRET;
     const REDIRECT_URI = process.env.GOOGLE_DRIVE_REDIRECT_URI;
-    const scopes = ['https://www.googleapis.com/auth/drive.readonly']
+    // const scopes = ['https://www.googleapis.com/auth/drive.readonly']
 
     if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI || !access_token) {
       throw new Error("Google Drive credentials not set");
@@ -85,7 +88,7 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     const request = await this.drive.files.list();
     const files = request.data.files;
   
-    let resultFiles: Document[] = [];
+    const resultFiles: Document[] = [];
     for (const file of files) {
       let resultFile = null;
       switch (file.mimeType) {
@@ -147,7 +150,7 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     return resultFiles;
   }
 
-  setOptions(options: GoogleDriveInputOptions): void {
+  setOptions(): void {
     // if (!options.refresh_token) {
     //   throw new Error("Google Drive redirect URI is required");
     // }

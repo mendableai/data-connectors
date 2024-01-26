@@ -1,5 +1,5 @@
 // import * as cheerio from 'cheerio';
-import cheerio, { CheerioAPI } from 'cheerio';
+import { CheerioAPI } from 'cheerio';
 interface Metadata {
   title: string | null;
   description: string | null;

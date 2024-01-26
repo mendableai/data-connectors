@@ -40,7 +40,7 @@ export class ZendeskDataProvider implements DataProvider<ZendeskInputOptions> {
     return fileTexts;
   }
 
-  authorizeNango(nangoAuthorizeOptions: ZendeskInputOptions): void {
+  authorizeNango(): void {
     throw new Error("Method not implemented.");
   }
 

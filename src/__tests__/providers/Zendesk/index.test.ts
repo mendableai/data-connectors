@@ -1,4 +1,4 @@
-import { DataConnector, createDataConnector } from "../../../DataConnector";
+import { createDataConnector } from "../../../DataConnector";
 
 test('Zendesk Get Documents', async () => {
 

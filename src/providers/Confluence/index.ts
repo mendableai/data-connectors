@@ -1,7 +1,6 @@
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { Nango } from "@nangohq/node";
-import { NangoDocument } from "../../entities/NangoDocument";
 
 export interface ConfluenceInputOptions {
   text: string;
@@ -56,6 +55,9 @@ export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
   private nango: Nango;
 
   constructor() {
+    if (!process.env.NANGO_SECRET_KEY) {
+      throw new Error("Nango secret key is required");
+    }
     this.nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
   }
 
