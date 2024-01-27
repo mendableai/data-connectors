@@ -9,10 +9,16 @@ test('Youtube Provider Testing', async () => {
   });
 
   await youtubeConnector.authorizeNango({
-    nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST,
+    nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST ?? "",
+  })
+
+  await youtubeConnector.setOptions({
+    urls: ['https://www.youtube.com/watch?v=SAHdqHvI_ts'],
+    mode: 'video-urls'
   })
 
   const documents = await youtubeConnector.getDocuments(); 
+  console.log(documents);
   expect(documents.length).toBeGreaterThan(0);
   expect(documents[0].content).not.toBe(null);
   expect(documents[0].content.length).toBeGreaterThan(0);

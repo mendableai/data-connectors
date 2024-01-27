@@ -72,7 +72,7 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
       access_token,
     });
 
-    this.youtube = google.youtube({ version: "v3", auth: oauth2Client });
+    this.youtube = google.youtube({ version: "v3", auth: oauth2Client })
   }
 
   async authorizeNango(
@@ -112,7 +112,6 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
   async getTranscriptsForVideos(urls, youtube) {
     const videoIds = urls.map(this.extractVideoId);
     const videoData = await this.getVideoDetails(videoIds, youtube);
-  
     const transcripts = await Promise.all(
       videoData.map(video => this.getTranscriptForVideo(video, youtube))
     );
@@ -142,14 +141,13 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
   
   async getTranscriptForVideo(video, youtube) {
     try {
-      const response = await youtube.videos.listCaptions({
+      const response = await youtube.captions.list({
         videoId: video.id,
         part: 'snippet',
       });
-  
       const captions = response.data.items;
       const transcript = captions.find(caption => caption.snippet.language === 'en')?.snippet.transcript;
-  
+  console.log(captions)
       return transcript;
     } catch (error) {
       console.error('Error fetching transcript for video:', video.id, error);
@@ -158,8 +156,9 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
   }
   
   extractVideoId(url) {
-    const match = url.match(/^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.*?)/);
-    return match ? match[1] : null;
+    const urlObj = new URL(url);
+    const videoId = urlObj.searchParams.get('v');
+    return videoId;
   }
   
   extractChannelId(url) {
