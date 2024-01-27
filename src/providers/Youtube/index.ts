@@ -111,10 +111,9 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
 
   async getTranscriptsForVideos(urls, youtube) {
     const videoIds = urls.map(this.extractVideoId);
-    const videoData = await this.getVideoDetails(videoIds, youtube);
-  
+
     const transcripts = await Promise.all(
-      videoData.map(video => this.getTranscriptForVideo(video, youtube))
+      videoIds.map(video => this.getTranscriptForVideo(video, youtube))
     );
   
     return transcripts;
@@ -131,34 +130,37 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
     return transcripts;
   }
   
-  async getVideoDetails(videoIds, youtube) {
-    const response = await youtube.videos.list({
-      id: videoIds.join(','),
-      part: 'snippet,contentDetails',
+  async getVideoDetails(videoId, youtube) {
+    const response = await youtube.captions.list({
+      videoId: videoId,
+      part: 'snippet',
     });
-  
-    return response.data.items;
+      
+    return response.data.items[0].id;
   }
+  
   
   async getTranscriptForVideo(video, youtube) {
     try {
-      const response = await youtube.videos.listCaptions({
-        videoId: video.id,
-        part: 'snippet',
+      console.log('Fetching transcript for video:', video);
+      const caption_id = await this.getVideoDetails(video, youtube);
+      const response = await youtube.captions.download({
+        id: caption_id,
+        tfmt: 'srt', // Format: e.g., srt, vtt, srv3
+        tlang: 'en',
       });
-  
-      const captions = response.data.items;
-      const transcript = captions.find(caption => caption.snippet.language === 'en')?.snippet.transcript;
-  
-      return transcript;
+      const text = await new Response(response.data).text();
+      return text;
+      
     } catch (error) {
       console.error('Error fetching transcript for video:', video.id, error);
       return null; // Or handle the error differently
     }
   }
   
+
   extractVideoId(url) {
-    const match = url.match(/^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.*?)/);
+    const match = url.match(/^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([^&]*)/);
     return match ? match[1] : null;
   }
   
@@ -190,7 +192,7 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
       part: 'snippet',
       maxResults: 50, // Adjust as needed
     });
-  
+
     return response.data.items;
   }
 

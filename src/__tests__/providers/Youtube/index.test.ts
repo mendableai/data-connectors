@@ -8,8 +8,14 @@ test('Youtube Provider Testing', async () => {
     provider: 'youtube',
   });
 
+  await youtubeConnector.setOptions({
+    mode:"video-urls",
+    urls: ["https://www.youtube.com/watch?v=DagdM1jPlpo"]
+  });
+
+
   await youtubeConnector.authorizeNango({
-    nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST,
+    nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST ?? "",
   })
 
   const documents = await youtubeConnector.getDocuments(); 
