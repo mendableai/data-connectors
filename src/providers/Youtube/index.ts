@@ -142,18 +142,16 @@ export class YoutubeDataProvider implements DataProvider<YoutubeOptions> {
   
   async getTranscriptForVideo(video, youtube) {
     try {
-      const response = await youtube.videos.listCaptions({
+      const response = await youtube.captions.download({
         videoId: video.id,
-        part: 'snippet',
+        tfmt: 'srt', // Format: e.g., srt, vtt, srv3
+        tlang: 'en',
       });
-  
-      const captions = response.data.items;
-      const transcript = captions.find(caption => caption.snippet.language === 'en')?.snippet.transcript;
-  
+      const transcript = response.data;
       return transcript;
     } catch (error) {
       console.error('Error fetching transcript for video:', video.id, error);
-      return null; // Or handle the error differently
+      return null;
     }
   }
   

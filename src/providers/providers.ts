@@ -11,7 +11,7 @@ import {
 } from "./GoogleDrive/index";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
-import { YoutubeDataProvider, YoutubeInputOptions } from "./Youtube";
+import { YoutubeAuthorizeOptions, YoutubeDataProvider, YoutubeInputOptions } from "./Youtube";
 import { ZendeskDataProvider, ZendeskInputOptions } from "./Zendesk";
 
 type Provider = {
@@ -62,7 +62,7 @@ type ProviderConfig = {
   youtube: {
     DataProvider: YoutubeDataProvider;
     Options: YoutubeInputOptions;
-    AuthorizeOptions: YoutubeInputOptions;
+    AuthorizeOptions: YoutubeAuthorizeOptions;
     NangoAuthorizeOptions: NangoConfluenceAuthorizationOptions;
   };
   // Add other providers here...
