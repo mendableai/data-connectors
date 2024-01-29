@@ -5,9 +5,11 @@ import {
   NangoConfluenceAuthorizationOptions,
 } from "./Confluence";
 import { DataProvider } from "./DataProvider";
+import { GitHubAuthorizationOptions, GitHubDataProvider, GitHubInputOptions, GitHubOptions } from "./GitHub";
 import {
   GoogleDriveDataProvider,
   GoogleDriveInputOptions,
+  NangoAuthorizationOptions,
 } from "./GoogleDrive/index";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
@@ -23,6 +25,7 @@ export const providers: Provider = {
   zendesk: new ZendeskDataProvider(),
   text: new TextDataProvider(),
   confluence: new ConfluenceDataProvider(),
+  github: new GitHubDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -56,6 +59,12 @@ type ProviderConfig = {
     Options: ConfluenceInputOptions;
     AuthorizeOptions: ConfluenceAuthorizeOptions;
     NangoAuthorizeOptions: NangoConfluenceAuthorizationOptions;
+  };
+  github: {
+    DataProvider: GitHubDataProvider;
+    Options: GitHubInputOptions;
+    AuthorizeOptions: GitHubAuthorizationOptions;
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
   // Add other providers here...
 };
