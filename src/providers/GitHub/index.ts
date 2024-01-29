@@ -172,9 +172,15 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
           file_sha: file.sha,
         });
 
+        // Decode the content blob as it is encoded
+        const decodedContent = Buffer.from(blob.data.content, 'base64').toString('utf8');
+
         return {
           file,
-          blob: blob.data,
+          blob: {
+            ...blob.data,
+            content: decodedContent,
+          },
         }
       })
     )

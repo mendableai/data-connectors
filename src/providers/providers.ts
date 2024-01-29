@@ -25,7 +25,7 @@ export const providers: Provider = {
   zendesk: new ZendeskDataProvider(),
   text: new TextDataProvider(),
   confluence: new ConfluenceDataProvider(),
-  github: new GitHubDataProvider(),
+  "github": new GitHubDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -60,7 +60,7 @@ type ProviderConfig = {
     AuthorizeOptions: ConfluenceAuthorizeOptions;
     NangoAuthorizeOptions: NangoConfluenceAuthorizationOptions;
   };
-  github: {
+  "github": {
     DataProvider: GitHubDataProvider;
     Options: GitHubInputOptions;
     AuthorizeOptions: GitHubAuthorizationOptions;
