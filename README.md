@@ -27,6 +27,7 @@ The following connectors are currently available:
 - ✅ Text
 - ✅ Web Scraper (single urls, sitemap)
 - ✅ Zendesk
+- ✅ GitHub (Private and Public repos)
 - 🔄 Google Drive (In progress)
 - 🔄 Confluence (In progress)
 
@@ -118,3 +119,7 @@ export class Document {
 }
 ```
 
+### Contributors
+
+Big thanks to all our contributors:
+@nickscamara, @rafasideguide, @eciarla, @mogery
