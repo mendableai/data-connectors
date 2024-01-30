@@ -7,10 +7,8 @@ import {
   BlockObjectResponse,
   ListBlockChildrenResponse,
   PageObjectResponse,
-  PartialPageObjectResponse,
   RichTextItemResponse,
   SearchResponse,
-  TextRichTextItemResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 
 export type NotionInputOptions = object;
@@ -75,6 +73,10 @@ async function recursiveBlockChildren(
   return blocks;
 }
 
+/**
+ * Converts a Notion rich text item to Markdown.
+ * Thoroughly supports TextRichTextItems, dumps the plain_text value for others (equations, mentions).
+ */
 function textItemToMarkdown(item: RichTextItemResponse): string {
   if (item.type === "text") {
     let md = "";
