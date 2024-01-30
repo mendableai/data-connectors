@@ -1,7 +1,7 @@
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
-import { YoutubeTranscript } from 'youtube-transcript';
-import puppeteer from 'puppeteer';
+import { YoutubeTranscript } from "youtube-transcript";
+import puppeteer from "puppeteer";
 
 export type YouTubeInputOptions = {
   urls: string[];
@@ -36,34 +36,38 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
         for (const item of data) {
           content += item.text + " \n";
         }
-  
+
         documents.push({
-          content: content.replace(/  +/g, ' ').trim(),
+          content: content.replace(/  +/g, " ").trim(),
           metadata: {
             sourceURL: url,
           },
           provider: "youtube",
           type: "text",
-        })
+        });
       } catch (error) {
         console.log("Error fetching video transcript. Skipping video:", url);
       }
     }
-    
+
     return documents;
   }
 
-  async fetchAllVideoUrlsFromChannel (channelUrl: string): Promise<string[] | []> {
+  async fetchAllVideoUrlsFromChannel(
+    channelUrl: string
+  ): Promise<string[] | []> {
     const urls: string[] = [];
 
     try {
       const browser = await puppeteer.launch({ headless: "new" });
       const page = await browser.newPage();
-  
+
       await page.goto(channelUrl);
-      const thubmnails = await page.$$('a#thumbnail');
+      const thubmnails = await page.$$("a#thumbnail");
       for (const thumbnail of thubmnails) {
-        const href = await thumbnail.evaluate((node) => node.getAttribute('href'));
+        const href = await thumbnail.evaluate((node) =>
+          node.getAttribute("href")
+        );
         if (href != null) {
           urls.push(`https://www.youtube.com${href}`);
         }

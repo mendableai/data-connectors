@@ -86,13 +86,13 @@ type ProviderConfig = {
     Options: FileInputOptions;
     AuthorizeOptions: FileInputOptions;
     NangoAuthorizeOptions: any;
-  }
+  };
   youtube: {
     DataProvider: YouTubeDataProvider;
     Options: YouTubeInputOptions;
     AuthorizeOptions: YouTubeInputOptions;
     NangoAuthorizeOptions: any;
-  }
+  };
   notion: {
     DataProvider: NotionDataProvider;
     Options: NotionInputOptions;
