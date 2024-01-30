@@ -7,8 +7,6 @@ dotenv.config();
 
 export type GoogleDriveInputOptions = {
   access_token: string;
-  // url: string;
-  // selectors: string[];
 }
 
 export interface NangoAuthorizationOptions {
@@ -21,8 +19,6 @@ export interface GoogleDriveOptions
     NangoAuthorizationOptions {}
 
 export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions> {
-  // private oauth2Client: OAuth2Client;
-  // private refresh_token: string = "";
   private drive: drive_v3.Drive;
   private using_nango: boolean = false;
   private nango_integration_id: string = "google-drive";
@@ -49,7 +45,6 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     const CLIENT_ID = process.env.GOOGLE_DRIVE_CLIENT_ID;
     const CLIENT_SECRET = process.env.GOOGLE_DRIVE_CLIENT_SECRET;
     const REDIRECT_URI = process.env.GOOGLE_DRIVE_REDIRECT_URI;
-    // const scopes = ['https://www.googleapis.com/auth/drive.readonly']
 
     if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI || !access_token) {
       throw new Error("Google Drive credentials not set");
@@ -71,18 +66,21 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
   async authorizeNango(
     authorizeOptions: NangoAuthorizationOptions
   ): Promise<void> {
-    const connection = await this.nango.getConnection(
-      authorizeOptions.nango_integration_id || this.nango_integration_id,
-      authorizeOptions.nango_connection_id
-    );
+    try {
+      const connection = await this.nango.getConnection(
+        authorizeOptions.nango_integration_id || this.nango_integration_id,
+        authorizeOptions.nango_connection_id
+      );
 
-    this.nango_connection_id = authorizeOptions.nango_connection_id;
-    this.access_token = connection.credentials.raw.access_token;
-    this.using_nango = true;
+      this.nango_connection_id = authorizeOptions.nango_connection_id;
+      this.access_token = connection.credentials.raw.access_token;
+      this.using_nango = true;
 
-    this.authorize({ access_token: this.access_token });
+      this.authorize({ access_token: this.access_token });
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
-
 
   async getDocuments(): Promise<Document[] | []> {
     const request = await this.drive.files.list();
@@ -91,47 +89,33 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     const resultFiles: Document[] = [];
     for (const file of files) {
       let resultFile = null;
-      switch (file.mimeType) {
-        case ('application/vnd.google-apps.spreadsheet'): {
-          resultFile = await this.drive.files.export({
-            fileId: file.id,
-            mimeType: 'text/csv',
-          });
-          break;
-        }
 
-        case ('application/vnd.google-apps.document'): {
-          resultFile = await this.drive.files.export({
-            fileId: file.id,
-            mimeType: 'text/plain',
-          });
-          break;
+      if (file.mimeType === 'application/vnd.google-apps.folder') {
+        const folderId = file.id;
+        const query = `'${folderId}' in parents and trashed=false`;
+        const folderRequest = await this.drive.files.list({
+          q: query,
+          fields: 'files(id, name, mimeType, webViewLink)',
+        });
+        const folderFiles = folderRequest.data.files;
+        if (folderFiles.length > 0) {
+          for (const folderFile of folderFiles) {
+            const parsedFile = await this.parseFile(folderFile);
+            if (parsedFile) {
+              resultFiles.push({
+                content: parsedFile.data,
+                type: "document",
+                provider: "google-drive",
+                metadata: {
+                  sourceURL: folderFile.webViewLink || '',
+                  mimeType: folderFile.mimeType,
+                },
+              });
+            }
+          }
         }
-
-        case ('application/pdf'): {
-          resultFile = await this.drive.files.get({
-            fileId: file.id,
-            alt: 'media',
-          }, { responseType: 'stream' });
-          break;
-        }
-
-        case ('application/vnd.google-apps.folder'): {
-          // TODO: implement the folder logic
-          break;
-        }
-
-        case ('text/plain'): {
-          resultFile = await this.drive.files.export({
-            fileId: file.id,
-            mimeType: 'text/plain',
-          });
-          break;
-        }
-
-        default: {
-          break;
-        }
+      } else {
+        resultFile = await this.parseFile(file);
       }
 
       if (resultFile) {
@@ -150,11 +134,52 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     return resultFiles;
   }
 
+  async parseFile(file: drive_v3.Schema$File): Promise<{ data: string } | null> {
+    let resultFile = null;
+
+    switch (file.mimeType) {
+      case ('application/vnd.google-apps.spreadsheet'): {
+        resultFile = await this.drive.files.export({
+          fileId: file.id,
+          mimeType: 'text/csv',
+        });
+        break;
+      }
+
+      case ('application/vnd.google-apps.document'): {
+        resultFile = await this.drive.files.export({
+          fileId: file.id,
+          mimeType: 'text/plain',
+        });
+        break;
+      }
+
+      case ('application/pdf'): {
+        resultFile = await this.drive.files.get({
+          fileId: file.id,
+          alt: 'media',
+        }, { responseType: 'stream' });
+        break;
+      }
+
+      case ('text/plain'): {
+        resultFile = await this.drive.files.export({
+          fileId: file.id,
+          mimeType: 'text/plain',
+        });
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+
+    return resultFile;
+  }
+
   setOptions(): void {
-    // if (!options.refresh_token) {
-    //   throw new Error("Google Drive redirect URI is required");
-    // }
-    // this.refresh_token = options.refresh_token;
+    return;
   }
 
 }
