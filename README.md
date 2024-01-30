@@ -27,12 +27,12 @@ The following connectors are currently available:
 - ✅ Files (.md, .txt, .pdf, .csv)
 - ✅ GitHub (Private and Public repos)
 - ✅ Google Drive
+- ✅ Notion (pages, [need to grant access](https://github.com/mendableai/data-connectors/issues/8#issuecomment-1917829463))
 - ✅ Text
 - ✅ Web Scraper (single urls, sitemap)
 - ✅ Zendesk
 - 🔄 Confluence (In progress)
 - 🔄 Jira (In progress)
-- 🔄 Notion (In progress)
 - 🔄 YouTube (In progress)
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
