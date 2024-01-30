@@ -18,7 +18,7 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
   }
 
   async getDocuments(): Promise<Document[]> {
-    let documents: Document[] = [];
+    const documents: Document[] = [];
     let content = "";
     let fileType = "";
 
