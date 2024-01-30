@@ -16,7 +16,7 @@ This repository contains a collection of data connectors built by [Mendable AI](
 - 🔄 Continuous Updates: Regularly updated with new connectors
 - 🤝 Community Support: Active community for troubleshooting and support
 - 🚀 High Performance: Optimized for speed and efficiency
-- 🛡️ Secure: Built with security in mind
+- 🛡️ Secure: Authentication with OAuth2.0 for most data providers 
 - 💯 Open Source: Community-driven development
 
 
