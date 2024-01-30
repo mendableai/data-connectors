@@ -14,6 +14,7 @@ import {
 } from "./GoogleDrive/index";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
+import { YouTubeDataProvider, YouTubeInputOptions } from "./YouTube";
 import { ZendeskDataProvider, ZendeskInputOptions } from "./Zendesk";
 
 type Provider = {
@@ -28,6 +29,7 @@ export const providers: Provider = {
   confluence: new ConfluenceDataProvider(),
   "github": new GitHubDataProvider(),
   file: new FileDataProvider(),
+  youtube: new YouTubeDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -72,6 +74,12 @@ type ProviderConfig = {
     DataProvider: FileDataProvider;
     Options: FileInputOptions;
     AuthorizeOptions: FileInputOptions;
+    NangoAuthorizeOptions: any;
+  }
+  youtube: {
+    DataProvider: YouTubeDataProvider;
+    Options: YouTubeInputOptions;
+    AuthorizeOptions: YouTubeInputOptions;
     NangoAuthorizeOptions: any;
   }
   // Add other providers here...
