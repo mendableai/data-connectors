@@ -7,7 +7,7 @@ dotenv.config();
 
 export type GoogleDriveInputOptions = {
   access_token: string;
-}
+};
 
 export interface NangoAuthorizationOptions {
   nango_connection_id: string;
@@ -18,7 +18,9 @@ export interface GoogleDriveOptions
   extends GoogleDriveInputOptions,
     NangoAuthorizationOptions {}
 
-export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions> {
+export class GoogleDriveDataProvider
+  implements DataProvider<GoogleDriveOptions>
+{
   private drive: drive_v3.Drive;
   private using_nango: boolean = false;
   private nango_integration_id: string = "google-drive";
@@ -33,11 +35,7 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     this.nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
   }
 
-  async authorize({
-    access_token,
-  }: {
-    access_token: string;
-  }): Promise<void> {
+  async authorize({ access_token }: { access_token: string }): Promise<void> {
     if (!access_token) {
       throw new Error("Google Drive access_token is required");
     }
@@ -85,17 +83,17 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
   async getDocuments(): Promise<Document[] | []> {
     const request = await this.drive.files.list();
     const files = request.data.files;
-  
+
     const resultFiles: Document[] = [];
     for (const file of files) {
       let resultFile = null;
 
-      if (file.mimeType === 'application/vnd.google-apps.folder') {
+      if (file.mimeType === "application/vnd.google-apps.folder") {
         const folderId = file.id;
         const query = `'${folderId}' in parents and trashed=false`;
         const folderRequest = await this.drive.files.list({
           q: query,
-          fields: 'files(id, name, mimeType, webViewLink)',
+          fields: "files(id, name, mimeType, webViewLink)",
         });
         const folderFiles = folderRequest.data.files;
         if (folderFiles.length > 0) {
@@ -107,7 +105,7 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
                 type: "document",
                 provider: "google-drive",
                 metadata: {
-                  sourceURL: folderFile.webViewLink || '',
+                  sourceURL: folderFile.webViewLink || "",
                   mimeType: folderFile.mimeType,
                 },
               });
@@ -124,7 +122,7 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
           type: "document",
           provider: "google-drive",
           metadata: {
-            sourceURL: file.webViewLink || '',
+            sourceURL: file.webViewLink || "",
             mimeType: file.mimeType,
           },
         });
@@ -134,38 +132,43 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
     return resultFiles;
   }
 
-  async parseFile(file: drive_v3.Schema$File): Promise<{ data: string } | null> {
+  async parseFile(
+    file: drive_v3.Schema$File
+  ): Promise<{ data: string } | null> {
     let resultFile = null;
 
     switch (file.mimeType) {
-      case ('application/vnd.google-apps.spreadsheet'): {
+      case "application/vnd.google-apps.spreadsheet": {
         resultFile = await this.drive.files.export({
           fileId: file.id,
-          mimeType: 'text/csv',
+          mimeType: "text/csv",
         });
         break;
       }
 
-      case ('application/vnd.google-apps.document'): {
+      case "application/vnd.google-apps.document": {
         resultFile = await this.drive.files.export({
           fileId: file.id,
-          mimeType: 'text/plain',
+          mimeType: "text/plain",
         });
         break;
       }
 
-      case ('application/pdf'): {
-        resultFile = await this.drive.files.get({
-          fileId: file.id,
-          alt: 'media',
-        }, { responseType: 'stream' });
+      case "application/pdf": {
+        resultFile = await this.drive.files.get(
+          {
+            fileId: file.id,
+            alt: "media",
+          },
+          { responseType: "stream" }
+        );
         break;
       }
 
-      case ('text/plain'): {
+      case "text/plain": {
         resultFile = await this.drive.files.export({
           fileId: file.id,
-          mimeType: 'text/plain',
+          mimeType: "text/plain",
         });
         break;
       }
@@ -181,5 +184,4 @@ export class GoogleDriveDataProvider implements DataProvider<GoogleDriveOptions>
   setOptions(): void {
     return;
   }
-
 }

@@ -24,7 +24,9 @@ export class DataConnector<T extends ProviderOptionsType> {
     this.provider = provider as ProviderInstance<T>;
   }
 
-  async getDocuments({ inProgress }: { inProgress?: (progress: Progress) => void } = {}) {
+  async getDocuments({
+    inProgress,
+  }: { inProgress?: (progress: Progress) => void } = {}) {
     if (this.provider === null) {
       throw new Error("Data provider not set");
     }
@@ -51,7 +53,6 @@ export class DataConnector<T extends ProviderOptionsType> {
     }
     return this.provider.setOptions(options as any);
   }
-
 }
 
 export function createDataConnector<T extends ProviderOptionsType>(options: {
@@ -59,4 +60,3 @@ export function createDataConnector<T extends ProviderOptionsType>(options: {
 }): DataConnector<T> {
   return new DataConnector<T>(options.provider);
 }
-

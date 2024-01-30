@@ -1,7 +1,7 @@
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import fs from "fs";
-import pdf from 'pdf-parse';
+import pdf from "pdf-parse";
 
 export type FileInputOptions = {
   files?: string[];
@@ -25,13 +25,13 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
     if (this.files.length > 0) {
       for (const file of this.files) {
         try {
-          fileType = file.split('.').pop() || "";
-          if (fileType === 'pdf') {
+          fileType = file.split(".").pop() || "";
+          if (fileType === "pdf") {
             const fileContent = fs.readFileSync(file);
             const data = await pdf(fileContent);
-            content = data.text
+            content = data.text;
           } else {
-            const fileContent = fs.readFileSync(file, { encoding: 'utf8' });
+            const fileContent = fs.readFileSync(file, { encoding: "utf8" });
             content = fileContent;
           }
         } catch (error) {
@@ -45,7 +45,7 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
             sourceURL: "#FILE_" + randomNumber.toString(),
           },
           provider: "file",
-          type: fileType
+          type: fileType,
         });
       }
     } else if (this.urls.length > 0) {
@@ -53,9 +53,9 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
         try {
           const response = await fetch(url);
           if (response.ok) {
-            fileType = url.split('.').pop() || "";
+            fileType = url.split(".").pop() || "";
 
-            if (fileType === 'pdf') {
+            if (fileType === "pdf") {
               const arrayBuffer = await response.arrayBuffer();
               const buffer = Buffer.from(new Uint8Array(arrayBuffer));
               const data = await pdf(buffer);
@@ -65,7 +65,9 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
               content = urlContent + "\n";
             }
           } else {
-            throw new Error(`Error fetching URL ${url}: ${response.statusText}`);
+            throw new Error(
+              `Error fetching URL ${url}: ${response.statusText}`
+            );
           }
         } catch (error) {
           throw new Error(`Error fetching URL ${url}: ${error}`);
@@ -77,7 +79,7 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
             sourceURL: url,
           },
           provider: "file",
-          type: fileType
+          type: fileType,
         });
       }
     }
