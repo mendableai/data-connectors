@@ -70,7 +70,7 @@ describe('FileDataProvider', () => {
     const documentsByURL = await fileUrlDataConnector.getDocuments();
 
     expect(documentsByURL).not.toBe(null);
-    // expect(documents.length).toBe(5);
+    expect(documentsByURL.length).toBe(5);
     expect(documentsByURL[0].content).not.toBe(null);
     expect(documentsByURL[0].content.length).toBeGreaterThan(0);
     expect(documentsByURL[0].metadata.sourceURL).not.toBe(null);
