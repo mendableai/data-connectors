@@ -24,6 +24,7 @@ import {
 } from "./Notion";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
+import { YouTubeDataProvider, YouTubeInputOptions } from "./YouTube";
 import { ZendeskDataProvider, ZendeskInputOptions } from "./Zendesk";
 
 type Provider = {
@@ -38,6 +39,7 @@ export const providers: Provider = {
   confluence: new ConfluenceDataProvider(),
   github: new GitHubDataProvider(),
   file: new FileDataProvider(),
+  youtube: new YouTubeDataProvider(),
   notion: new NotionDataProvider(),
 };
 
@@ -83,6 +85,12 @@ type ProviderConfig = {
     DataProvider: FileDataProvider;
     Options: FileInputOptions;
     AuthorizeOptions: FileInputOptions;
+    NangoAuthorizeOptions: any;
+  };
+  youtube: {
+    DataProvider: YouTubeDataProvider;
+    Options: YouTubeInputOptions;
+    AuthorizeOptions: YouTubeInputOptions;
     NangoAuthorizeOptions: any;
   };
   notion: {

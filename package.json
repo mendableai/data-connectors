@@ -68,8 +68,10 @@
         "node-html-parser": "^6.1.12",
         "octokit": "^3.1.2",
         "pdf-parse": "^1.1.1",
+        "puppeteer": "^21.10.0",
         "scrapingbee": "^1.7.4",
         "tsup": "^8.0.1",
-        "xml2js": "^0.6.2"
+        "xml2js": "^0.6.2",
+        "youtube-transcript": "^1.0.6"
     }
 }
