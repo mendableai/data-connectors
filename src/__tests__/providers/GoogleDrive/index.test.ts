@@ -2,15 +2,14 @@ import { createDataConnector } from "../../../DataConnector";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 test('Google Drive Provider Testing', async () => {
   const googleDriveDataConnector = createDataConnector({
     provider: 'google-drive',
   });
 
   await googleDriveDataConnector.authorizeNango({
-    nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST,
-  })
+    nango_connection_id: process.env.NANGO_CONNECTION_ID_GOOGLE_DRIVE_TEST,
+  });
 
   const documents = await googleDriveDataConnector.getDocuments(); // { type: "accounts" }
   expect(documents.length).toBeGreaterThan(0);
@@ -21,4 +20,4 @@ test('Google Drive Provider Testing', async () => {
   expect(documents[0].metadata).not.toBe(null);
   expect(documents[0].metadata.sourceURL).not.toBe(null);
   expect(documents[0].metadata.mimeType).not.toBe(null);
-}, 30 * 1000); // 10 seconds
+}, 20 * 1000); // 20 seconds
