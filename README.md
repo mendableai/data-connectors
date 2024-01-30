@@ -24,13 +24,16 @@ This repository contains a collection of data connectors built by [Mendable AI](
 ## Available Connectors
 
 The following connectors are currently available:
-- ✅ Text
 - ✅ Files (.md, .txt, .pdf, .csv)
+- ✅ GitHub (Private and Public repos)
+- ✅ Google Drive
+- ✅ Text
 - ✅ Web Scraper (single urls, sitemap)
 - ✅ Zendesk
-- ✅ GitHub (Private and Public repos)
-- 🔄 Google Drive (In progress)
 - 🔄 Confluence (In progress)
+- 🔄 Jira (In progress)
+- 🔄 Notion (In progress)
+- 🔄 YouTube (In progress)
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
 

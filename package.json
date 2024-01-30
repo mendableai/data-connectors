@@ -43,6 +43,7 @@
     "devDependencies": {
         "@babel/preset-env": "^7.23.8",
         "@babel/preset-typescript": "^7.23.3",
+        "@types/dotenv": "^8.2.0",
         "@types/jest": "^29.5.11",
         "@types/pdf-parse": "^1.1.4",
         "@types/xml2js": "^0.4.14",
