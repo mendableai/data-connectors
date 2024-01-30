@@ -12,6 +12,11 @@ import {
   GoogleDriveInputOptions,
   NangoAuthorizationOptions,
 } from "./GoogleDrive/index";
+import {
+  NotionAuthorizationOptions,
+  NotionDataProvider,
+  NotionInputOptions,
+} from "./Notion";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
 import { ZendeskDataProvider, ZendeskInputOptions } from "./Zendesk";
@@ -28,6 +33,7 @@ export const providers: Provider = {
   confluence: new ConfluenceDataProvider(),
   "github": new GitHubDataProvider(),
   file: new FileDataProvider(),
+  "notion": new NotionDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -74,6 +80,12 @@ type ProviderConfig = {
     AuthorizeOptions: FileInputOptions;
     NangoAuthorizeOptions: any;
   }
+  "notion": {
+    DataProvider: NotionDataProvider;
+    Options: NotionInputOptions;
+    AuthorizeOptions: NotionAuthorizationOptions;
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
+  };
   // Add other providers here...
 };
 

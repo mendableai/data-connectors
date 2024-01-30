@@ -59,6 +59,7 @@
     },
     "dependencies": {
         "@nangohq/node": "^0.36.100",
+        "@notionhq/client": "^2.2.14",
         "@octokit/auth-oauth-user": "^4.0.1",
         "axios": "^1.6.5",
         "cheerio": "^1.0.0-rc.12",
