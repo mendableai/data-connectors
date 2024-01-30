@@ -17,8 +17,8 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
   }
 
   async getDocuments(): Promise<Document[]> {
-    let documents: Document[] = [];
-    let videosUrls: string[] = [];
+    const documents: Document[] = [];
+    const videosUrls: string[] = [];
 
     if (this.isChannel) {
       for (const url of this.urls) {
@@ -57,7 +57,6 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
     const urls: string[] = [];
 
     try {
-      console.log('hey', {channelUrl})
       const browser = await puppeteer.launch({ headless: "new" });
       const page = await browser.newPage();
   
@@ -76,7 +75,7 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
       console.error("Error fetching video URLs from channel:", error);
       return [];
     }
-  };
+  }
 
   async authorizeNango(): Promise<void> {
     // no need
