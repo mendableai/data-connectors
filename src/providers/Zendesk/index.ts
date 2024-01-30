@@ -22,7 +22,6 @@ export class ZendeskDataProvider implements DataProvider<ZendeskInputOptions> {
     const fileTexts: Document[] = [];
 
     for (let i = 0; i < documents.length; i++) {
-
       const d = documents[i];
       fileTexts.push({
         content: d.text,
@@ -44,11 +43,10 @@ export class ZendeskDataProvider implements DataProvider<ZendeskInputOptions> {
     throw new Error("Method not implemented.");
   }
 
-  setOptions(options: ZendeskInputOptions ): void {
+  setOptions(options: ZendeskInputOptions): void {
     if (!options.zendesk_brand_name) {
       throw new Error("Zendesk brand name is required");
     }
     this.zendesk_brand_name = options.zendesk_brand_name;
   }
-
 }

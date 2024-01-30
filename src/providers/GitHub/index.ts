@@ -14,7 +14,7 @@ const DOC_EXTENSIONS = [".md", ".txt", ".rst", ".mdx"];
  * @param path Path to file
  */
 function isDoc(path: string): boolean {
-  return DOC_EXTENSIONS.some(ext => path.endsWith(ext));
+  return DOC_EXTENSIONS.some((ext) => path.endsWith(ext));
 }
 
 export type GitHubInputOptions = {
@@ -35,7 +35,7 @@ export type GitHubInputOptions = {
 
   /**
    * Document only mode. If true, only documents (.md, .txt, .rst, .mdx) will be retrieved.
-   * 
+   *
    * @default false
    */
   docOnly?: boolean;
@@ -56,8 +56,7 @@ export type GitHubAuthorizationOptions = {
    * GitHub authentication parameters. [Read more here.](https://github.com/octokit/authentication-strategies.js/)
    */
   auth?: any;
-}
-
+};
 
 export interface GitHubOptions
   extends GitHubInputOptions,
@@ -69,7 +68,7 @@ export interface GitHubOptions
  */
 export class GitHubDataProvider implements DataProvider<GitHubOptions> {
   private octokit: Octokit = new Octokit({});
-  
+
   private owner: string;
   private repo: string;
   private branch?: string;
@@ -97,14 +96,16 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
     }
     const nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
 
-    const integration = (await nango.getIntegration(
-      options.nango_integration_id ?? "github",
-      true, // get credentials
-    )).config as IntegrationWithCreds;
+    const integration = (
+      await nango.getIntegration(
+        options.nango_integration_id ?? "github",
+        true // get credentials
+      )
+    ).config as IntegrationWithCreds;
 
     const connection = await nango.getConnection(
       options.nango_integration_id ?? "github",
-      options.nango_connection_id,
+      options.nango_connection_id
     );
 
     await this.authorize({
@@ -115,13 +116,13 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
         clientType: "oauth-app",
         token: connection.credentials.raw.access_token,
         scopes: integration.scopes,
-      }
-    })
+      },
+    });
   }
 
   async getDocuments(): Promise<Document[]> {
     let branchName = this.branch;
-    
+
     if (this.branch === undefined) {
       const repo = await this.octokit.rest.repos.get({
         owner: this.owner,
@@ -130,7 +131,9 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
 
       // Not all GitHub repositories have branches.
       if (repo.data.default_branch === undefined) {
-        throw Error("Could not determine the default branch of the repository. Please specify a branch with the `branch` option.");
+        throw Error(
+          "Could not determine the default branch of the repository. Please specify a branch with the `branch` option."
+        );
       }
 
       branchName = repo.data.default_branch;
@@ -149,23 +152,26 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
       recursive: "true",
     });
 
-    let files = tree.data.tree
-      .filter(item => item.type == "blob");
+    let files = tree.data.tree.filter((item) => item.type == "blob");
 
     if (this.path !== undefined) {
-      files = files.filter(file => {
+      files = files.filter((file) => {
         // Check if this.path contains file.path
         const relative = path.relative(this.path, file.path);
-        return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
+        return (
+          relative && !relative.startsWith("..") && !path.isAbsolute(relative)
+        );
       });
     }
 
     if (this.docOnly) {
-      files = files.filter(file => DOC_EXTENSIONS.some(ext => file.path.endsWith(ext)));
+      files = files.filter((file) =>
+        DOC_EXTENSIONS.some((ext) => file.path.endsWith(ext))
+      );
     }
 
     const blobs = await Promise.all(
-      files.map(async file => {
+      files.map(async (file) => {
         const blob = await this.octokit.rest.git.getBlob({
           owner: this.owner,
           repo: this.repo,
@@ -173,7 +179,10 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
         });
 
         // Decode the content blob as it is encoded
-        const decodedContent = Buffer.from(blob.data.content, 'base64').toString('utf8');
+        const decodedContent = Buffer.from(
+          blob.data.content,
+          "base64"
+        ).toString("utf8");
 
         return {
           file,
@@ -181,27 +190,23 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
             ...blob.data,
             content: decodedContent,
           },
-        }
+        };
       })
-    )
+    );
 
     return blobs.map(({ file, blob }) => ({
       id: blob.sha,
       content: blob.content,
       metadata: {
         // Construct pretty source URL.
-        sourceURL: `https://github.com/${
-          encodeURIComponent(this.owner)
-        }/${
-          encodeURIComponent(this.repo)
-        }/blob/${
-          encodeURIComponent(branchName)
-        }/${
-          file.path
-            .split("/") // Don't escape slashes, they're a part of the path.
-            .map(part => encodeURIComponent(part))
-            .join("/")
-        }`,
+        sourceURL: `https://github.com/${encodeURIComponent(
+          this.owner
+        )}/${encodeURIComponent(this.repo)}/blob/${encodeURIComponent(
+          branchName
+        )}/${file.path
+          .split("/") // Don't escape slashes, they're a part of the path.
+          .map((part) => encodeURIComponent(part))
+          .join("/")}`,
 
         githubOwner: this.owner,
         githubRepo: this.repo,
@@ -211,7 +216,9 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
       provider: "github",
       type: this.docOnly
         ? "document" // don't run iterating computation if we only retrieved documents anyways
-        : isDoc(file.path) ? "document" : "code",
+        : isDoc(file.path)
+        ? "document"
+        : "code",
     }));
   }
 

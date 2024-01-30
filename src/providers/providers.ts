@@ -6,12 +6,22 @@ import {
 } from "./Confluence";
 import { DataProvider } from "./DataProvider";
 import { FileDataProvider, FileInputOptions } from "./File";
-import { GitHubAuthorizationOptions, GitHubDataProvider, GitHubInputOptions, GitHubOptions } from "./GitHub";
+import {
+  GitHubAuthorizationOptions,
+  GitHubDataProvider,
+  GitHubInputOptions,
+  GitHubOptions,
+} from "./GitHub";
 import {
   GoogleDriveDataProvider,
   GoogleDriveInputOptions,
   NangoAuthorizationOptions,
 } from "./GoogleDrive/index";
+import {
+  NotionAuthorizationOptions,
+  NotionDataProvider,
+  NotionInputOptions,
+} from "./Notion";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
 import { YouTubeDataProvider, YouTubeInputOptions } from "./YouTube";
@@ -27,9 +37,10 @@ export const providers: Provider = {
   zendesk: new ZendeskDataProvider(),
   text: new TextDataProvider(),
   confluence: new ConfluenceDataProvider(),
-  "github": new GitHubDataProvider(),
+  github: new GitHubDataProvider(),
   file: new FileDataProvider(),
   youtube: new YouTubeDataProvider(),
+  notion: new NotionDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -64,7 +75,7 @@ type ProviderConfig = {
     AuthorizeOptions: ConfluenceAuthorizeOptions;
     NangoAuthorizeOptions: NangoConfluenceAuthorizationOptions;
   };
-  "github": {
+  github: {
     DataProvider: GitHubDataProvider;
     Options: GitHubInputOptions;
     AuthorizeOptions: GitHubAuthorizationOptions;
@@ -82,6 +93,12 @@ type ProviderConfig = {
     AuthorizeOptions: YouTubeInputOptions;
     NangoAuthorizeOptions: any;
   }
+  notion: {
+    DataProvider: NotionDataProvider;
+    Options: NotionInputOptions;
+    AuthorizeOptions: NotionAuthorizationOptions;
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
+  };
   // Add other providers here...
 };
 

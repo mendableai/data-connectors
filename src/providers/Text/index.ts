@@ -5,7 +5,6 @@ export type TextInputOptions = {
   text: string;
 };
 export class TextDataProvider implements DataProvider<TextInputOptions> {
-
   private text: string = "";
   authorize(): void {
     // no need
@@ -38,5 +37,4 @@ export class TextDataProvider implements DataProvider<TextInputOptions> {
     }
     this.text = options.text;
   }
-
 }

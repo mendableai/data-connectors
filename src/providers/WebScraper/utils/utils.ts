@@ -18,8 +18,6 @@ export async function attemptScrapWithRequests(
   }
 }
 
-
 export function sanitizeText(text: string): string {
-  
-    return text.replace("\u0000", "");
+  return text.replace("\u0000", "");
 }

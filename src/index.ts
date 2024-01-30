@@ -6,4 +6,11 @@ import {
   ProviderOptionsMap,
   providers,
 } from "./providers/providers";
-export { createDataConnector, providers, ProviderMap, ProviderOptionsMap, AuthorizeOptionsMap, NangoAuthorizeOptionsMap };
+export {
+  createDataConnector,
+  providers,
+  ProviderMap,
+  ProviderOptionsMap,
+  AuthorizeOptionsMap,
+  NangoAuthorizeOptionsMap,
+};
