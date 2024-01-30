@@ -5,6 +5,7 @@ import {
   NangoConfluenceAuthorizationOptions,
 } from "./Confluence";
 import { DataProvider } from "./DataProvider";
+import { FileDataProvider, FileInputOptions } from "./File";
 import { GitHubAuthorizationOptions, GitHubDataProvider, GitHubInputOptions, GitHubOptions } from "./GitHub";
 import {
   GoogleDriveDataProvider,
@@ -26,6 +27,7 @@ export const providers: Provider = {
   text: new TextDataProvider(),
   confluence: new ConfluenceDataProvider(),
   "github": new GitHubDataProvider(),
+  file: new FileDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -66,6 +68,12 @@ type ProviderConfig = {
     AuthorizeOptions: GitHubAuthorizationOptions;
     NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
+  file: {
+    DataProvider: FileDataProvider;
+    Options: FileInputOptions;
+    AuthorizeOptions: FileInputOptions;
+    NangoAuthorizeOptions: any;
+  }
   // Add other providers here...
 };
 

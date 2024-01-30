@@ -44,6 +44,7 @@
         "@babel/preset-env": "^7.23.8",
         "@babel/preset-typescript": "^7.23.3",
         "@types/jest": "^29.5.11",
+        "@types/pdf-parse": "^1.1.4",
         "@types/xml2js": "^0.4.14",
         "@typescript-eslint/eslint-plugin": "6.19.1",
         "@typescript-eslint/parser": "6.19.1",
@@ -64,6 +65,7 @@
         "googleapis": "^131.0.0",
         "node-html-parser": "^6.1.12",
         "octokit": "^3.1.2",
+        "pdf-parse": "^1.1.1",
         "scrapingbee": "^1.7.4",
         "tsup": "^8.0.1",
         "xml2js": "^0.6.2"

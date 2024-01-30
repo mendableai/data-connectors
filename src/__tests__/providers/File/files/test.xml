@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests>
+  <test>
+    <id>1</id>
+    <column1>test</column1>
+    <column2>11111</column2>
+    <column3>test test</column3>
+  </test>
+  <test>
+    <id>2</id>
+    <column1>test2 test2</column1>
+    <column2>22222</column2>
+    <column3>test</column3>
+  </test>
+  <test>
+    <id>3</id>
+    <column1>test3</column1>
+    <column2>33333</column2>
+    <column3>test test test</column3>
+  </test>
+</tests>

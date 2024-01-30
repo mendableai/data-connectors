@@ -25,6 +25,7 @@ This repository contains a collection of data connectors built by [Mendable AI](
 
 The following connectors are currently available:
 - ✅ Text
+- ✅ Files (.md, .txt, .pdf, .csv)
 - ✅ Web Scraper (single urls, sitemap)
 - ✅ Zendesk
 - ✅ GitHub (Private and Public repos)
