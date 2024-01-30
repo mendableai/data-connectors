@@ -31,9 +31,10 @@ The following connectors are currently available:
 - ✅ Text
 - ✅ Web Scraper (single urls, sitemap)
 - ✅ Zendesk
+- ✅ YouTube (Whole Channel and Video)
 - 🔄 Confluence (In progress)
 - 🔄 Jira (In progress)
-- 🔄 YouTube (In progress)
+
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
 
