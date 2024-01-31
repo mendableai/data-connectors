@@ -32,6 +32,9 @@ dependencies:
   googleapis:
     specifier: ^131.0.0
     version: 131.0.0
+  jira.js:
+    specifier: ^3.0.2
+    version: 3.0.2
   node-html-parser:
     specifier: ^6.1.12
     version: 6.1.12
@@ -4640,6 +4643,16 @@ packages:
       - supports-color
       - ts-node
     dev: true
+
+  /jira.js@3.0.2:
+    resolution: {integrity: sha512-yysfjFYIFPE/hp8pJ/u3q6OBX/KYm4nMsmQym7JSO2pIJ4bIbdDLuz1DDGcHqi1DflfOSBKYc2BlJXTl5IZUEA==}
+    dependencies:
+      axios: 1.6.5
+      form-data: 4.0.0
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
