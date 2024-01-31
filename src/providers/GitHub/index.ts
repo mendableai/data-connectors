@@ -178,8 +178,12 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
           file_sha: file.sha,
         });
 
-        // Decode the content blob as it is encoded
-        const decodedContent = Buffer.from(
+        // Determine if the file is an image based on its path
+        const isImage = /\.(jpg|jpeg|png|gif|bmp|svg|tiff|webp)$/i.test(file.path);
+        const isVideo = /\.(mp4|avi|mov|wmv|flv|mkv)$/i.test(file.path);
+
+        // Decode the content blob as it is encoded, unless it's an image
+        const decodedContent = (isImage || isVideo) ? blob.data.content : Buffer.from(
           blob.data.content,
           "base64"
         ).toString("utf8");
@@ -191,8 +195,7 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
             content: decodedContent,
           },
         };
-      })
-    );
+      }));
 
     return blobs.map(({ file, blob }) => ({
       id: blob.sha,
