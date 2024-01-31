@@ -18,6 +18,11 @@ import {
   NangoAuthorizationOptions,
 } from "./GoogleDrive/index";
 import {
+  JiraAuthorizationOptions,
+  JiraDataProvider,
+  JiraInputOptions,
+} from "./Jira";
+import {
   NotionAuthorizationOptions,
   NotionDataProvider,
   NotionInputOptions,
@@ -41,6 +46,7 @@ export const providers: Provider = {
   file: new FileDataProvider(),
   youtube: new YouTubeDataProvider(),
   notion: new NotionDataProvider(),
+  jira: new JiraDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -97,6 +103,12 @@ type ProviderConfig = {
     DataProvider: NotionDataProvider;
     Options: NotionInputOptions;
     AuthorizeOptions: NotionAuthorizationOptions;
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
+  };
+  jira: {
+    DataProvider: JiraDataProvider;
+    Options: JiraInputOptions;
+    AuthorizeOptions: JiraAuthorizationOptions;
     NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
   // Add other providers here...
