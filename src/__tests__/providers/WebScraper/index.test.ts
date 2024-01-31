@@ -1,6 +1,21 @@
 import { createDataConnector } from "../../../DataConnector";
 
-test("WebScraper Crawl model", async () => {}, 3 * 60 * 1000);
+test("WebScraper Crawl test", async () => {
+  // const webDataConnector = createDataConnector({
+  //   provider: "web-scraper",
+  // });
+  // await webDataConnector.setOptions({
+  //   urls: ["https://mendable.ai"],
+  //   mode: "crawl",
+  //   crawlerOptions:{
+  //     returnOnlyUrls: true
+  //   }
+  // });
+  // const documents = await webDataConnector.getDocuments(); // { type: "accounts" }
+  // console.log(documents);
+  // expect(documents).not.toBe(null);
+  // expect(documents.length).toBeGreaterThan(0);
+}, 3 * 60 * 1000);
 
 test("WebScraper Sitemap model", async () => {
   // const webDataConnector = createDataConnector({

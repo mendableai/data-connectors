@@ -4,14 +4,25 @@ import { Progress } from "../../entities/Progress";
 import { scrapSingleUrl } from "./single_url";
 import { batchProcess } from "../../utils/batchProcess";
 import { getLinksFromSitemap } from "./sitemap";
+import { WebCrawler } from "./crawler";
 
 export type WebScraperOptions = {
   urls: string[];
   mode: "single_urls" | "sitemap" | "crawl";
+  crawlerOptions?: {
+    returnOnlyUrls?: boolean;
+    includes?: string[];
+    excludes?: string[];
+    maxCrawledLinks?: number;
+  };
 };
 export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
   private urls: string[] = [""];
   private mode: "single_urls" | "sitemap" | "crawl" = "single_urls";
+  private includes: string[];
+  private excludes: string[];
+  private maxCrawledLinks: number;
+  private returnOnlyUrls: boolean;
 
   authorize(): void {
     throw new Error("Method not implemented.");
@@ -51,7 +62,22 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
       throw new Error("Url is required");
     }
     if (this.mode === "crawl") {
-      throw new Error("Crawl mode not implemented");
+      const crawler = new WebCrawler({
+        initialUrl: this.urls[0],
+        includes: this.includes,
+        excludes: this.excludes,
+        maxCrawledLinks: this.maxCrawledLinks,
+      });
+      const links = await crawler.start();
+      if (this.returnOnlyUrls) {
+        return links.map((url) => ({
+          content: "",
+          metadata: { sourceURL: url },
+          provider: "web",
+          type: "text",
+        }));
+      }
+      return this.convertUrlsToDocuments(links, inProgress);
     }
 
     if (this.mode === "single_urls") {
@@ -72,5 +98,9 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     }
     this.urls = options.urls;
     this.mode = options.mode;
+    this.includes = options.crawlerOptions.includes ?? [];
+    this.excludes = options.crawlerOptions.excludes ?? [];
+    this.maxCrawledLinks = options.crawlerOptions.maxCrawledLinks ?? 1000;
+    this.returnOnlyUrls = options.crawlerOptions.returnOnlyUrls ?? false;
   }
 }

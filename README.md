@@ -29,7 +29,7 @@ The following connectors are currently available:
 - ✅ Google Drive
 - ✅ Notion (pages, [need to grant access](https://github.com/mendableai/data-connectors/issues/8#issuecomment-1917829463))
 - ✅ Text
-- ✅ Web Scraper (single urls, sitemap)
+- ✅ Web Scraper (Crawler, URLs, Sitemap)
 - ✅ Zendesk
 - ✅ YouTube (Whole Channel and Video)
 - 🔄 Confluence (In progress)
