@@ -1,8 +1,7 @@
 import {
-  ConfluenceAuthorizeOptions,
+  ConfluenceAuthorizationOptions,
   ConfluenceDataProvider,
   ConfluenceInputOptions,
-  NangoConfluenceAuthorizationOptions,
 } from "./Confluence";
 import { DataProvider } from "./DataProvider";
 import { FileDataProvider, FileInputOptions } from "./File";
@@ -78,8 +77,8 @@ type ProviderConfig = {
   confluence: {
     DataProvider: ConfluenceDataProvider;
     Options: ConfluenceInputOptions;
-    AuthorizeOptions: ConfluenceAuthorizeOptions;
-    NangoAuthorizeOptions: NangoConfluenceAuthorizationOptions;
+    AuthorizeOptions: ConfluenceAuthorizationOptions;
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
   github: {
     DataProvider: GitHubDataProvider;

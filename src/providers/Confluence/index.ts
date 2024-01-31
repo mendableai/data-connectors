@@ -1,118 +1,148 @@
+import { Nango } from "@nangohq/node";
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
-import { Nango } from "@nangohq/node";
+import { NangoAuthorizationOptions } from "../GoogleDrive";
+import { ConfluenceClient, Config } from "confluence.js";
+import { Content } from "confluence.js/out/api/models";
+import axios from "axios";
 
-export interface ConfluenceInputOptions {
-  text: string;
-}
-export interface ConfluenceAuthorizeOptions {
-  access_token: string;
-  // client_id: string;
-  // client_secret: string;
-  // authorization_url: string;
-}
+export type ConfluenceInputOptions = object;
 
-export interface NangoConfluenceAuthorizationOptions {
-  nango_connection_id: string;
-  nango_integration_id?: string;
-}
+export type ConfluenceAuthorizationOptions = {
+  /**
+   * Your Confluence host. Example: "https://your-domain.atlassian.net"
+   */
+  host?: string;
 
-// create an interface thant join the two interfaces above
+  /**
+   * Your Confluence authentication method. [Read more here.](https://github.com/mrrefactoring/confluence.js/?tab=readme-ov-file#authentication)
+   */
+  auth?: Config.Authentication;
+};
+
 export interface ConfluenceOptions
   extends ConfluenceInputOptions,
-    ConfluenceAuthorizeOptions,
-    NangoConfluenceAuthorizationOptions {}
+    ConfluenceAuthorizationOptions,
+    NangoAuthorizationOptions {}
 
+/**
+ * Retrieves all pages from Confluence.
+ */
+async function getAllPages(
+  confluence: ConfluenceClient,
+  start?: number
+): Promise<Content[]> {
+  const content = await confluence.content.getContent({
+    start,
+    expand: ["body.storage", "history", "history.lastUpdated", "ancestors"],
+    type: "page",
+  });
+
+  if (content.size === content.limit) {
+    return (content.results ?? []).concat(
+      await getAllPages(confluence, content.start + content.size)
+    );
+  } else {
+    return content.results ?? [];
+  }
+}
+
+/**
+ * The Confluence Data Provider retrieves all pages from a Confluence workspace.
+ */
 export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
-  private client_id: string = "";
-  private client_secret: string = "";
-  // this is the guy we need to get from the user
-  private authorization_url: string = "";
-  //
-  private scopes: string[] = [
-    "read:confluence-space.summary",
-    "read:confluence-props",
-    "read:confluence-content.all",
-    "read:confluence-content.summary",
-    "read:confluence-content.permission",
-    "readonly:content.attachment:confluence",
-    "read:content:confluence",
-    "read:content-details:confluence",
-    "read:page:confluence",
-    "read:attachment:confluence",
-    "read:blogpost:confluence",
-    "read:custom-content:confluence",
-    "read:content.metadata:confluence",
-  ];
-  private token_url: string = "https://auth.atlassian.com/oauth/token"; // ??
-  private access_token: string = "";
-  // Don't need this?
-  private redirect_uri: string = "https://X";
+  private confluence: ConfluenceClient = undefined;
 
-  private using_nango: boolean = false;
-  private nango_integration_id: string = "confluence";
-  private nango_connection_id: string = "";
-  private nango: Nango;
-
-  constructor() {
-    if (!process.env.NANGO_SECRET_KEY) {
-      throw new Error("Nango secret key is required");
+  /**
+   * Authorizes the Confluence Data Provider.
+   */
+  async authorize(options: ConfluenceAuthorizationOptions): Promise<void> {
+    if (options.host === undefined || options.host === null) {
+      throw new Error("options.host is required.");
     }
-    this.nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
+
+    if (options.auth === undefined || options.auth === null) {
+      throw new Error("options.auth is required.");
+    }
+
+    this.confluence = new ConfluenceClient({
+      host: options.host,
+      authentication: options.auth,
+    });
   }
 
-  async authorize({ access_token }: { access_token: string }): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
+  /**
+   * Authorizes the Confluence Data Provider via Nango.
+   */
+  async authorizeNango(options: NangoAuthorizationOptions): Promise<void> {
+    if (!process.env.NANGO_SECRET_KEY) {
+      throw new Error(
+        "Nango secret key is required. Please specify it in the NANGO_SECRET_KEY environment variable."
+      );
+    }
+    const nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
 
-  async authorizeNango(
-    authorizeOptions: NangoConfluenceAuthorizationOptions
-  ): Promise<void> {
-    const connection = await this.nango.getConnection(
-      authorizeOptions.nango_integration_id || this.nango_integration_id,
-      authorizeOptions.nango_connection_id
+    const connection = await nango.getConnection(
+      options.nango_integration_id ?? "confluence",
+      options.nango_connection_id
     );
 
-    this.nango_connection_id = authorizeOptions.nango_connection_id;
-    this.access_token = connection.credentials.raw.access_token;
-    this.using_nango = true;
+    const access = await axios.get(
+      "https://api.atlassian.com/oauth/token/accessible-resources",
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${connection.credentials.raw.access_token}`,
+        },
+      }
+    );
 
-    this.authorize({ access_token: this.access_token });
+    const cloudId = access.data[0].id;
 
-    return;
+    await this.authorize({
+      host: `https://api.atlassian.com/ex/confluence/${cloudId}`,
+      auth: {
+        oauth2: {
+          accessToken: connection.credentials.raw.access_token,
+        },
+      },
+    });
   }
 
-  async getDocuments(): Promise<Document[] | []> {
-    throw new Error("Method not implemented.");
+  /**
+   * Retrieves all pages from the authorized Confluence workspace.
+   * The pages' content will be HTML.
+   */
+  async getDocuments(): Promise<Document[]> {
+    if (this.confluence === undefined) {
+      throw Error(
+        "You must authorize the ConfluenceDataProvider before requesting documents."
+      );
+    }
 
-    // if (this.using_nango) {
-    //   return new Promise<Document[] | []>((resolve, reject) => {
-    //     const intervalId = setInterval(async () => {
-    //       const rcs = await this.nango.listRecords({
-    //         providerConfigKey: this.nango_integration_id,
-    //         connectionId: this.nango_connection_id,
-    //         model: "Document",
-    //       });
-    //       const records = rcs.records as NangoDocument[];
-    //       if (records.length > 0) {
-    //         clearInterval(intervalId);
-    //         const documents = records.map((record) => {
-    //           return record.transformToDocument("confluence");
-    //         });
-    //         resolve(documents);
-    //       }
-    //     }, 2000);
-    //   });
-    // }
-    // return Promise.resolve([]);
+    const pages = await getAllPages(this.confluence);
+
+    return await Promise.all(
+      pages.map(async (page) => {
+        const ancestor = (page.ancestors ?? [])[0];
+        return {
+          provider: "confluence",
+          id: `${page.id}`,
+          content: `<h1>${page.title}</h1>\n${page.body.storage.value}`,
+          createdAt: new Date((page as any).history.createdDate),
+          updatedAt: new Date((page as any).history.lastUpdated.when),
+          metadata: {
+            sourceURL: page._links.self,
+            ancestor: ancestor?.title,
+          },
+          type: "page",
+        };
+      })
+    );
   }
 
-  nangoPoolingDocs(): Promise<Document[] | []> {
-    // await for documents to be ready
-    return new Promise((resolve, reject) => []);
-  }
-
-  setOptions(): void {
-    throw new Error("Method not implemented.");
-  }
+  /**
+   * Do not call. The Confluence Data Provider doesn't have any options.
+   */
+  setOptions(_options: ConfluenceOptions): void {}
 }
