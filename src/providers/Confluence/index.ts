@@ -53,6 +53,8 @@ async function getAllPages(
 export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
   private confluence: ConfluenceClient = undefined;
 
+  private cloudUrl: string = "";
+
   /**
    * Authorizes the Confluence Data Provider.
    */
@@ -98,6 +100,7 @@ export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
     );
 
     const cloudId = access.data[0].id;
+    this.cloudUrl = access.data[0].url
 
     await this.authorize({
       host: `https://api.atlassian.com/ex/confluence/${cloudId}`,
@@ -132,7 +135,7 @@ export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
           createdAt: new Date((page as any).history.createdDate),
           updatedAt: new Date((page as any).history.lastUpdated.when),
           metadata: {
-            sourceURL: page._links.self,
+            sourceURL: this.cloudUrl + "/wiki" + page._links.webui,
             ancestor: ancestor?.title,
           },
           type: "page",
