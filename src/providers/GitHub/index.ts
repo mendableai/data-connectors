@@ -6,6 +6,7 @@ import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { NangoAuthorizationOptions } from "../GoogleDrive";
 import { IntegrationWithCreds } from "@nangohq/node/dist/types";
+import pdf from "pdf-parse";
 
 const DOC_EXTENSIONS = [".md", ".txt", ".rst", ".mdx"];
 
@@ -181,13 +182,20 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
         // Determine if the file is an image based on its path
         const isImage = /\.(jpg|jpeg|png|gif|bmp|svg|tiff|webp)$/i.test(file.path);
         const isVideo = /\.(mp4|avi|mov|wmv|flv|mkv)$/i.test(file.path);
-
-        // Decode the content blob as it is encoded, unless it's an image
-        const decodedContent = (isImage || isVideo) ? blob.data.content : Buffer.from(
-          blob.data.content,
-          "base64"
-        ).toString("utf8");
-
+        const isAudio = /\.(mp3|wav|flac|ogg|wma)$/i.test(file.path);
+        const isPdf = /\.(pdf)$/i.test(file.path);
+        let decodedContent;
+        if (isPdf) {
+          const buffer = Buffer.from(blob.data.content, "base64");
+          const data = await pdf(buffer);
+          decodedContent = data.text;
+        } else {
+          // Decode the content blob as it is encoded, unless it's an image, video or audio
+          decodedContent = (isImage || isVideo || isAudio) ? blob.data.content : Buffer.from(
+            blob.data.content,
+            "base64"
+          ).toString("utf8");
+        }
         return {
           file,
           blob: {
