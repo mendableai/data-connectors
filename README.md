@@ -32,8 +32,8 @@ The following connectors are currently available:
 - ✅ Web Scraper (Crawler, URLs, Sitemap)
 - ✅ Zendesk
 - ✅ YouTube (Whole Channel and Video)
+- ✅ Jira
 - 🔄 Confluence (In progress)
-- 🔄 Jira (In progress)
 
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
@@ -127,4 +127,4 @@ export class Document {
 ### Contributors
 
 Big thanks to all our contributors:
-@nickscamara, @rafasideguide, @eciarla, @mogery
+@nickscamara, @rafasideguide, @mogery, @eciarla
