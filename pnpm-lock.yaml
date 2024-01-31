@@ -23,6 +23,9 @@ dependencies:
   cheerio:
     specifier: ^1.0.0-rc.12
     version: 1.0.0-rc.12
+  confluence.js:
+    specifier: ^1.7.2
+    version: 1.7.2
   dotenv:
     specifier: ^16.4.1
     version: 16.4.1
@@ -2729,6 +2732,14 @@ packages:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
     dev: false
 
+  /atlassian-jwt@2.0.3:
+    resolution: {integrity: sha512-G9oO3HHS1UKgsLRXj6nNKv2TY6g3PleBCdzHwbFeVKg+18GBFIMRz+ApxuOuWAgcL7RngNFF5rGNtw1Ss3hvTg==}
+    engines: {node: '>= 0.4.0'}
+    dependencies:
+      jsuri: 1.3.1
+      lodash: 4.17.21
+    dev: false
+
   /axios-retry@3.9.1:
     resolution: {integrity: sha512-8PJDLJv7qTTMMwdnbMvrLYuvB47M81wRtxQmEdV5w4rgbTXTt+vtPkXwajOfOdSyv/wZICJOC+/UhXH4aQ/R+w==}
     dependencies:
@@ -3132,6 +3143,18 @@ packages:
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
+
+  /confluence.js@1.7.2:
+    resolution: {integrity: sha512-hCHC4tZNikLonSJdKjcc7CQa5XuWFVyzn5iCKYAtDs7lXWmQyzRoc7mTnKGgMDYNOOCuK+vVIwf9nEcecWXOtw==}
+    dependencies:
+      atlassian-jwt: 2.0.3
+      axios: 1.6.5
+      form-data: 4.0.0
+      oauth: 0.10.0
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
@@ -4735,6 +4758,10 @@ packages:
       semver: 7.5.4
     dev: false
 
+  /jsuri@1.3.1:
+    resolution: {integrity: sha512-LLdAeqOf88/X0hylAI7oSir6QUsz/8kOW0FcJzzu/SJRfORA/oPHycAOthkNp7eLPlTAbqVDFbqNRHkRVzEA3g==}
+    dev: false
+
   /jwa@1.4.1:
     resolution: {integrity: sha512-qiLX/xhEEFKUAJ6FiBMbes3w9ATzyk5W7Hvzpa/SLYdxNtng+gcurvrI7TbACjIXlsJyr05/S1oUhZrc63evQA==}
     dependencies:
@@ -4858,6 +4885,10 @@ packages:
 
   /lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
+    dev: false
+
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /lru-cache@10.2.0:
@@ -5019,6 +5050,10 @@ packages:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
     dependencies:
       boolbase: 1.0.0
+    dev: false
+
+  /oauth@0.10.0:
+    resolution: {integrity: sha512-1orQ9MT1vHFGQxhuy7E/0gECD3fd2fCC+PIX+/jgmU/gI3EpRocXtmtvxCO5x3WZ443FLTLFWNDjl5MPJf9u+Q==}
     dev: false
 
   /object-assign@4.1.1:

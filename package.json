@@ -63,6 +63,7 @@
         "async": "^3.2.5",
         "axios": "^1.6.5",
         "cheerio": "^1.0.0-rc.12",
+        "confluence.js": "^1.7.2",
         "dotenv": "^16.4.1",
         "glob": "^10.3.10",
         "googleapis": "^131.0.0",
