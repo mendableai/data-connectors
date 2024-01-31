@@ -39,19 +39,22 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     const totalUrls = urls.length;
     let processedUrls = 0;
     const results: (Document | null)[] = new Array(urls.length).fill(null);
-    await batchProcess(urls, 10, async (url: string, index: number) => {
-      const result = await scrapSingleUrl(url);
-      processedUrls++;
-      if (inProgress) {
-        inProgress({
-          current: processedUrls,
-          total: totalUrls,
-          status: "SCRAPING",
-          currentDocumentUrl: url,
-        });
-      }
-      results[index] = result;
-    });
+    for (let i = 0; i < urls.length; i += 10) {
+      const batchUrls = urls.slice(i, i + 10);
+      await Promise.all(batchUrls.map(async (url, index) => {
+        const result = await scrapSingleUrl(url);
+        processedUrls++;
+        if (inProgress) {
+          inProgress({
+            current: processedUrls,
+            total: totalUrls,
+            status: "SCRAPING",
+            currentDocumentUrl: url,
+          });
+        }
+        results[i + index] = result;
+      }));
+    }
     return results.filter((result) => result !== null) as Document[];
   }
 
@@ -98,9 +101,9 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     }
     this.urls = options.urls;
     this.mode = options.mode;
-    this.includes = options.crawlerOptions.includes ?? [];
-    this.excludes = options.crawlerOptions.excludes ?? [];
-    this.maxCrawledLinks = options.crawlerOptions.maxCrawledLinks ?? 1000;
-    this.returnOnlyUrls = options.crawlerOptions.returnOnlyUrls ?? false;
+    this.includes = options.crawlerOptions?.includes ?? [];
+    this.excludes = options.crawlerOptions?.excludes ?? [];
+    this.maxCrawledLinks = options.crawlerOptions?.maxCrawledLinks ?? 1000;
+    this.returnOnlyUrls = options.crawlerOptions?.returnOnlyUrls ?? false;
   }
 }

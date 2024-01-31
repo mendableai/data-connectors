@@ -10,13 +10,12 @@ test(
     //   urls: ["https://mendable.ai"],
     //   mode: "crawl",
     //   crawlerOptions:{
-    //     returnOnlyUrls: true
+    //     returnOnlyUrls: false
     //   }
     // });
     // const documents = await webDataConnector.getDocuments(); // { type: "accounts" }
-    // console.log(documents);
     // expect(documents).not.toBe(null);
-    // expect(documents.length).toBeGreaterThan(0);
+    // expect(documents.length).toBeGreaterThan(11);
   },
   3 * 60 * 1000
 );
@@ -31,8 +30,8 @@ test("WebScraper Sitemap model", async () => {
   // });
   // const documents = await webDataConnector.getDocuments(); // { type: "accounts" }
   // expect(documents).not.toBe(null);
-  // expect(documents.length).toBeGreaterThan(0);
-});
+  // expect(documents.length).toBeGreaterThan(11);
+}, 3 * 60 * 1000);
 
 test(
   "WebScraper Single Urls mode",
