@@ -33,7 +33,7 @@ The following connectors are currently available:
 - ✅ Zendesk
 - ✅ YouTube (Whole Channel and Video)
 - ✅ Jira
-- 🔄 Confluence (In progress)
+- ✅ Confluence (Wiki Pages)
 
 
 We are working hard on transitioning all of our connectors to this repository. If you need a connector that is not available here, please open an issue or submit a PR.
