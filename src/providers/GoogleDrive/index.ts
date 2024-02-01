@@ -7,6 +7,7 @@ dotenv.config();
 
 export type GoogleDriveInputOptions = {
   access_token: string;
+  filesIds?: string[];
 };
 
 export interface NangoAuthorizationOptions {
@@ -27,6 +28,7 @@ export class GoogleDriveDataProvider
   private nango_connection_id: string = "";
   private nango: Nango;
   private access_token: string = "";
+  private filesIds: string[] = [];
 
   constructor() {
     if (!process.env.NANGO_SECRET_KEY) {
@@ -81,8 +83,23 @@ export class GoogleDriveDataProvider
   }
 
   async getDocuments(): Promise<Document[] | []> {
-    const request = await this.drive.files.list();
-    const files = request.data.files;
+    let files = [];
+
+    if (this.filesIds.length > 0) {
+      const promises = this.filesIds.map(async (fileId) => {
+        const request = await this.drive.files.get({
+          fileId: fileId,
+          fields: 'id, name, mimeType, webViewLink',
+        });
+        return request.data;
+      });
+      files = await Promise.all(promises);
+    } else {
+      const request = await this.drive.files.list({
+        fields: 'files(id, name, mimeType, webViewLink)',
+      });
+      files = request.data.files;
+    }
 
     const resultFiles: Document[] = [];
     for (const file of files) {
@@ -181,7 +198,9 @@ export class GoogleDriveDataProvider
     return resultFile;
   }
 
-  setOptions(): void {
-    return;
+  setOptions(options: GoogleDriveInputOptions): void {
+    if (options.filesIds) {
+      this.filesIds = options.filesIds;
+    }
   }
 }

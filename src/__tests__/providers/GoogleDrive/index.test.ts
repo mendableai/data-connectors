@@ -13,7 +13,8 @@ test(
       nango_connection_id: process.env.NANGO_CONNECTION_ID_GOOGLE_DRIVE_TEST,
     });
 
-    const documents = await googleDriveDataConnector.getDocuments(); // { type: "accounts" }
+    const documents = await googleDriveDataConnector.getDocuments();
+    
     expect(documents.length).toBeGreaterThan(0);
     expect(documents[0].content).not.toBe(null);
     expect(documents[0].content.length).toBeGreaterThan(0);
@@ -22,6 +23,18 @@ test(
     expect(documents[0].metadata).not.toBe(null);
     expect(documents[0].metadata.sourceURL).not.toBe(null);
     expect(documents[0].metadata.mimeType).not.toBe(null);
+
+    expect(documents).toContainEqual({
+      content: expect.stringContaining(
+        "Jack plays soccer\r\nMaria plays volleybal\r\nThey play sports"
+      ),
+      metadata: {
+        sourceURL: expect.any(String),
+        mimeType: expect.any(String),
+      },
+      provider: "google-drive",
+      type: "document",
+    });
   },
   20 * 1000
 ); // 20 seconds
