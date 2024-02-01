@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export type GoogleDriveInputOptions = {
-  access_token: string;
   filesIds?: string[];
 };
 
@@ -15,8 +14,12 @@ export interface NangoAuthorizationOptions {
   nango_integration_id?: string;
 }
 
+export type GDriveAuthorizationOptions = {
+  access_token: string;
+}
+
 export interface GoogleDriveOptions
-  extends GoogleDriveInputOptions,
+  extends GoogleDriveInputOptions, GDriveAuthorizationOptions,
     NangoAuthorizationOptions {}
 
 export class GoogleDriveDataProvider
@@ -37,7 +40,7 @@ export class GoogleDriveDataProvider
     this.nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
   }
 
-  async authorize({ access_token }: { access_token: string }): Promise<void> {
+  async authorize({ access_token }: GDriveAuthorizationOptions): Promise<void> {
     if (!access_token) {
       throw new Error("Google Drive access_token is required");
     }
