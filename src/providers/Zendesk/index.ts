@@ -1,6 +1,7 @@
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { ZendeskReader } from "./zendesk";
+import { Progress } from "../../entities/Progress";
 
 export type ZendeskInputOptions = {
   zendesk_brand_name: string;
@@ -12,7 +13,7 @@ export class ZendeskDataProvider implements DataProvider<ZendeskInputOptions> {
     return;
   }
 
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[]> {
     if (!this.zendesk_brand_name) {
       throw new Error("Zendesk brand name not set");
     }
