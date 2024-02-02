@@ -3,6 +3,7 @@ import { Document } from "../../entities/Document";
 import { google, drive_v3 } from "googleapis";
 import { Nango } from "@nangohq/node";
 import dotenv from "dotenv";
+import { Progress } from "../../entities/Progress";
 dotenv.config();
 
 export type GoogleDriveInputOptions = {
@@ -85,7 +86,7 @@ export class GoogleDriveDataProvider
     }
   }
 
-  async getDocuments(): Promise<Document[] | []> {
+  async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[] | []> {
     let files = [];
 
     if (this.filesIds.length > 0) {
@@ -105,11 +106,20 @@ export class GoogleDriveDataProvider
     }
 
     const resultFiles: Document[] = [];
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+      if (inProgress) {
+        inProgress({
+          current: i + 1,
+          total: files.length,
+          status: "SCRAPING",
+          currentDocumentUrl: files[i].webViewLink || "",
+        });
+      }
+
       let resultFile = null;
 
-      if (file.mimeType === "application/vnd.google-apps.folder") {
-        const folderId = file.id;
+      if (files[i].mimeType === "application/vnd.google-apps.folder") {
+        const folderId = files[i].id;
         const query = `'${folderId}' in parents and trashed=false`;
         const folderRequest = await this.drive.files.list({
           q: query,
@@ -133,7 +143,7 @@ export class GoogleDriveDataProvider
           }
         }
       } else {
-        resultFile = await this.parseFile(file);
+        resultFile = await this.parseFile(files[i]);
       }
 
       if (resultFile) {
@@ -142,8 +152,8 @@ export class GoogleDriveDataProvider
           type: "document",
           provider: "google-drive",
           metadata: {
-            sourceURL: file.webViewLink || "",
-            mimeType: file.mimeType,
+            sourceURL: files[i].webViewLink || "",
+            mimeType: files[i].mimeType,
           },
         });
       }

@@ -2,6 +2,7 @@ import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { YoutubeTranscript } from "youtube-transcript";
 import puppeteer from "puppeteer";
+import { Progress } from "../../entities/Progress";
 
 export type YouTubeInputOptions = {
   urls: string[];
@@ -16,7 +17,7 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
     return;
   }
 
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[]> {
     const documents: Document[] = [];
     const videosUrls: string[] = [];
 
@@ -29,10 +30,19 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
       this.urls = videosUrls;
     }
 
-    for (const url of this.urls) {
+    for (let i = 0; i < this.urls.length; i++) {
+      if (inProgress) {
+        inProgress({
+          current: i + 1,
+          total: this.urls.length,
+          status: "SCRAPING",
+          currentDocumentUrl: this.urls[i],
+        });
+      }
+
       let content = "";
       try {
-        const data = await YoutubeTranscript.fetchTranscript(url);
+        const data = await YoutubeTranscript.fetchTranscript(this.urls[i]);
         for (const item of data) {
           content += item.text + " \n";
         }
@@ -40,13 +50,13 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
         documents.push({
           content: content.replace(/  +/g, " ").trim(),
           metadata: {
-            sourceURL: url,
+            sourceURL: this.urls[i],
           },
           provider: "youtube",
           type: "text",
         });
       } catch (error) {
-        console.log("Error fetching video transcript. Skipping video:", url);
+        console.log("Error fetching video transcript. Skipping video:", this.urls[i]);
       }
     }
 

@@ -23,6 +23,15 @@ export class ZendeskDataProvider implements DataProvider<ZendeskInputOptions> {
     const fileTexts: Document[] = [];
 
     for (let i = 0; i < documents.length; i++) {
+      if (inProgress) {
+        inProgress({
+          current: i + 1,
+          total: documents.length,
+          status: "SCRAPING",
+          currentDocumentUrl: documents[i].extra_info.url,
+        });
+      }
+
       const d = documents[i];
       fileTexts.push({
         content: d.text,

@@ -2,6 +2,7 @@ import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import fs from "fs";
 import pdf from "pdf-parse";
+import { Progress } from "../../entities/Progress";
 
 export type FileInputOptions = {
   files?: string[];
@@ -17,28 +18,37 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
     return;
   }
 
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[]> {
     const documents: Document[] = [];
     let content = "";
     let fileType = "";
 
     if (this.files.length > 0) {
-      for (const file of this.files) {
+      for (let i = 0; i < this.files.length; i++) {
+        const randomNumber = Math.floor(Math.random() * 100000000);
+        if (inProgress) { 
+          inProgress({
+            current: i + 1,
+            total: this.files.length,
+            status: "SCRAPING",
+            currentDocumentUrl: "#FILE_" + randomNumber.toString(),
+          });
+        }
+
         try {
-          fileType = file.split(".").pop() || "";
+          fileType = this.files[i].split(".").pop() || "";
           if (fileType === "pdf") {
-            const fileContent = fs.readFileSync(file);
+            const fileContent = fs.readFileSync(this.files[i]);
             const data = await pdf(fileContent);
             content = data.text;
           } else {
-            const fileContent = fs.readFileSync(file, { encoding: "utf8" });
+            const fileContent = fs.readFileSync(this.files[i], { encoding: "utf8" });
             content = fileContent;
           }
         } catch (error) {
-          throw new Error(`Error reading file ${file}: ${error}`);
+          throw new Error(`Error reading file ${this.files[i]}: ${error}`);
         }
 
-        const randomNumber = Math.floor(Math.random() * 100000000);
         documents.push({
           content,
           metadata: {
@@ -49,11 +59,20 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
         });
       }
     } else if (this.urls.length > 0) {
-      for (const url of this.urls) {
+      for (let i = 0; i < this.urls.length; i++) {
+        if (inProgress) {
+          inProgress({
+            current: i + 1,
+            total: this.urls.length,
+            status: "SCRAPING",
+            currentDocumentUrl: this.urls[i],
+          });
+        }
+
         try {
-          const response = await fetch(url);
+          const response = await fetch(this.urls[i]);
           if (response.ok) {
-            fileType = url.split(".").pop() || "";
+            fileType = this.urls[i].split(".").pop() || "";
 
             if (fileType === "pdf") {
               const arrayBuffer = await response.arrayBuffer();
@@ -66,17 +85,17 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
             }
           } else {
             throw new Error(
-              `Error fetching URL ${url}: ${response.statusText}`
+              `Error fetching URL ${this.urls[i]}: ${response.statusText}`
             );
           }
         } catch (error) {
-          throw new Error(`Error fetching URL ${url}: ${error}`);
+          throw new Error(`Error fetching URL ${this.urls[i]}: ${error}`);
         }
 
         documents.push({
           content,
           metadata: {
-            sourceURL: url,
+            sourceURL: this.urls[i],
           },
           provider: "file",
           type: fileType,

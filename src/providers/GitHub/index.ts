@@ -7,6 +7,7 @@ import { Document } from "../../entities/Document";
 import { NangoAuthorizationOptions } from "../GoogleDrive";
 import { IntegrationWithCreds } from "@nangohq/node/dist/types";
 import pdf from "pdf-parse";
+import { Progress } from "../../entities/Progress";
 
 const DOC_EXTENSIONS = [".md", ".txt", ".rst", ".mdx"];
 
@@ -121,7 +122,9 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
     });
   }
 
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(
+    inProgress?: (progress: Progress) => void
+  ): Promise<Document[]> {
     let branchName = this.branch;
 
     if (this.branch === undefined) {
@@ -172,7 +175,16 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
     }
 
     const blobs = await Promise.all(
-      files.map(async (file) => {
+      files.map(async (file, i) => {
+        if (inProgress) {
+          inProgress({
+            current: i + 1,
+            total: files.length,
+            status: "SCRAPING",
+            currentDocumentUrl: `https://github.com/${this.owner}/${this.repo}/blob/${branchName}/${file.path}`,
+          });
+        }
+
         const blob = await this.octokit.rest.git.getBlob({
           owner: this.owner,
           repo: this.repo,

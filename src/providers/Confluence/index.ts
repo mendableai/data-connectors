@@ -5,6 +5,7 @@ import { NangoAuthorizationOptions } from "../GoogleDrive";
 import { ConfluenceClient, Config } from "confluence.js";
 import { Content } from "confluence.js/out/api/models";
 import axios from "axios";
+import { Progress } from "../../entities/Progress";
 
 export type ConfluenceInputOptions = object;
 
@@ -116,7 +117,7 @@ export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
    * Retrieves all pages from the authorized Confluence workspace.
    * The pages' content will be HTML.
    */
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[]> {
     if (this.confluence === undefined) {
       throw Error(
         "You must authorize the ConfluenceDataProvider before requesting documents."
@@ -126,7 +127,16 @@ export class ConfluenceDataProvider implements DataProvider<ConfluenceOptions> {
     const pages = await getAllPages(this.confluence);
 
     return await Promise.all(
-      pages.map(async (page) => {
+      pages.map(async (page, i) => {
+        if (inProgress) {
+          inProgress({
+            current: i + 1,
+            total: pages.length,
+            status: "SCRAPING",
+            currentDocumentUrl: page._links.webui,
+          });
+        }
+
         const ancestor = (page.ancestors ?? [])[0];
         return {
           provider: "confluence",
