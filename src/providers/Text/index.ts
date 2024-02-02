@@ -15,26 +15,28 @@ export class TextDataProvider implements DataProvider<TextInputOptions> {
   }
 
   async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[]> {
-    if (this.records.length > 0) {
-      return this.records.map((record, i) => {
-        if (inProgress) {
-          inProgress({
-            current: i + 1,
-            total: this.records.length,
-            status: "SCRAPING",
-            currentDocumentUrl: record.source,
-          });
-        }
+    if (this.records) {
+      if (this.records.length > 0) {
+        return this.records.map((record, i) => {
+          if (inProgress) {
+            inProgress({
+              current: i + 1,
+              total: this.records.length,
+              status: "SCRAPING",
+              currentDocumentUrl: record.source,
+            });
+          }
 
-        return {
-          content: record.content,
-          metadata: {
-            sourceURL: record.source,
-          },
-          provider: "text",
-          type: "text",
-        };
-      });
+          return {
+            content: record.content,
+            metadata: {
+              sourceURL: record.source,
+            },
+            provider: "text",
+            type: "text",
+          };
+        });
+      }
     }
 
     const randomNumber = Math.floor(Math.random() * 100000000);
@@ -60,7 +62,15 @@ export class TextDataProvider implements DataProvider<TextInputOptions> {
     if (!options.text && !options.records) {
       throw new Error("Either text or records is required");
     }
-    this.text = options.text;
-    this.records = options.records;
+
+    if (this.text) {
+      this.text = options.text;
+      this.records = [];
+    }
+    
+    if (this.records) {
+      this.text = "";
+      this.records = options.records;
+    }
   }
 }
