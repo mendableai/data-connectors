@@ -4,11 +4,11 @@ import { Progress } from "../../entities/Progress";
 
 export type TextInputOptions = {
   text?: string;
-  records?: { source: string, content: string }[];
+  records?: { source: string, content: string, metadata?: any }[];
 };
 export class TextDataProvider implements DataProvider<TextInputOptions> {
   private text: string = "";
-  private records: { source: string, content: string }[] = [];
+  private records: { source: string, content: string, metadata?: any }[] = [];
   authorize(): void {
     // no need
     return;
@@ -30,6 +30,7 @@ export class TextDataProvider implements DataProvider<TextInputOptions> {
           return {
             content: record.content,
             metadata: {
+              ...record.metadata,
               sourceURL: record.source,
             },
             provider: "text",
@@ -63,7 +64,7 @@ export class TextDataProvider implements DataProvider<TextInputOptions> {
       throw new Error("Either text or records is required");
     }
 
-    if (options.text !== "") {
+    if (options.text && options.text != "") {
       this.text = options.text;
       this.records = [];
       return;
