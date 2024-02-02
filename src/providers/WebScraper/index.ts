@@ -15,6 +15,7 @@ export type WebScraperOptions = {
     excludes?: string[];
     maxCrawledLinks?: number;
   };
+  concurrentRequests?: number;
 };
 export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
   private urls: string[] = [""];
@@ -23,6 +24,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
   private excludes: string[];
   private maxCrawledLinks: number;
   private returnOnlyUrls: boolean;
+  private concurrentRequests: number = 20;
 
   authorize(): void {
     throw new Error("Method not implemented.");
@@ -39,8 +41,8 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     const totalUrls = urls.length;
     let processedUrls = 0;
     const results: (Document | null)[] = new Array(urls.length).fill(null);
-    for (let i = 0; i < urls.length; i += 10) {
-      const batchUrls = urls.slice(i, i + 10);
+    for (let i = 0; i < urls.length; i += this.concurrentRequests) {
+      const batchUrls = urls.slice(i, i + this.concurrentRequests);
       await Promise.all(batchUrls.map(async (url, index) => {
         const result = await scrapSingleUrl(url);
         processedUrls++;
@@ -101,6 +103,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     }
     this.urls = options.urls;
     this.mode = options.mode;
+    this.concurrentRequests = options.concurrentRequests ?? 20;
     this.includes = options.crawlerOptions?.includes ?? [];
     this.excludes = options.crawlerOptions?.excludes ?? [];
     this.maxCrawledLinks = options.crawlerOptions?.maxCrawledLinks ?? 1000;
