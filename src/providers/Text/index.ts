@@ -63,12 +63,12 @@ export class TextDataProvider implements DataProvider<TextInputOptions> {
       throw new Error("Either text or records is required");
     }
 
-    if (this.text) {
+    if (this.text !== "") {
       this.text = options.text;
       this.records = [];
     }
     
-    if (this.records) {
+    if (this.records && this.records.length > 0) {
       this.text = "";
       this.records = options.records;
     }
