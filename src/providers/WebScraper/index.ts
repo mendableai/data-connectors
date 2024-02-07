@@ -73,7 +73,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
         excludes: this.excludes,
         maxCrawledLinks: this.maxCrawledLinks,
       });
-      const links = await crawler.start();
+      const links = await crawler.start(inProgress);
       if (this.returnOnlyUrls) {
         return links.map((url) => ({
           content: "",

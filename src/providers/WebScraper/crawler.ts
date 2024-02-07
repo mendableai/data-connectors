@@ -4,6 +4,7 @@ import { URL } from "url";
 import { getLinksFromSitemap } from "./sitemap";
 import async from "async";
 import { glob } from "glob";
+import { Progress } from "../../entities/Progress";
 
 export class WebCrawler {
   private initialUrl: string;
@@ -30,7 +31,7 @@ export class WebCrawler {
     this.maxCrawledLinks = maxCrawledLinks;
   }
 
-  public async start(concurrencyLimit: number = 5): Promise<string[]> {
+  public async start(inProgress?: (progress: Progress) => void,concurrencyLimit: number = 5): Promise<string[]> {
     // Attempt to fetch and return sitemap links before any crawling
     const sitemapLinks = await this.tryFetchSitemapLinks(this.initialUrl);
     if (sitemapLinks.length > 0) {
@@ -38,12 +39,13 @@ export class WebCrawler {
       return sitemapLinks;
     }
     // Proceed with crawling if no sitemap links found
-    return await this.crawlUrls([this.initialUrl], concurrencyLimit);
+    return await this.crawlUrls([this.initialUrl], concurrencyLimit, inProgress);
   }
 
   private async crawlUrls(
     urls: string[],
-    concurrencyLimit: number
+    concurrencyLimit: number,
+    inProgress?: (progress: Progress) => void
   ): Promise<string[]> {
     const queue = async.queue(async (task: string, callback) => {
       if (this.crawledUrls.size >= this.maxCrawledLinks) {
@@ -52,6 +54,14 @@ export class WebCrawler {
       }
       const newUrls = await this.crawl(task);
       newUrls.forEach((url) => this.crawledUrls.add(url));
+      if (inProgress) {
+        inProgress({
+          current: this.crawledUrls.size,
+          total: this.maxCrawledLinks,
+          status: "SCRAPING",
+          currentDocumentUrl: newUrls[newUrls.length - 1],
+        });
+      }
       await this.crawlUrls(newUrls, concurrencyLimit);
       callback();
     }, concurrencyLimit);
