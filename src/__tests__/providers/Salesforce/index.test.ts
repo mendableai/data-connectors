@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 test(
-  "Confluence Provider Testing",
+  "Salesforce Provider Testing",
   async () => {
     const salesforceDataConnector = createDataConnector({
       provider: "salesforce",
