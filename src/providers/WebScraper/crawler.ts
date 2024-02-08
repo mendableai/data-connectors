@@ -8,6 +8,7 @@ import { Progress } from "../../entities/Progress";
 
 export class WebCrawler {
   private initialUrl: string;
+  private baseUrl: string; // Added to store the base URL
   private includes: string[];
   private excludes: string[];
   private maxCrawledLinks: number;
@@ -26,6 +27,7 @@ export class WebCrawler {
     maxCrawledLinks?: number;
   }) {
     this.initialUrl = initialUrl;
+    this.baseUrl = new URL(initialUrl).origin; // Initialize the base URL
     this.includes = includes ?? [];
     this.excludes = excludes ?? [];
     this.maxCrawledLinks = maxCrawledLinks;
@@ -111,15 +113,19 @@ export class WebCrawler {
 
       $("a").each((_, element) => {
         const href = $(element).attr("href");
-        if (
-          href &&
-          !href.startsWith(this.initialUrl) &&
-          this.isInternalLink(href) &&
-          this.matchesPattern(href) &&
-          this.noSections(href)
-        ) {
-          const urlToCrawl = this.initialUrl + href;
-          links.push(urlToCrawl);
+        if (href) {
+          let fullUrl = href;
+          if (!href.startsWith("http")) {
+            fullUrl = new URL(href, this.baseUrl).toString(); // Use base URL for relative links
+          }
+          if (
+            fullUrl.startsWith(this.initialUrl) && // Ensure it starts with the initial URL
+            this.isInternalLink(fullUrl) &&
+            this.matchesPattern(fullUrl) &&
+            this.noSections(fullUrl)
+          ) {
+            links.push(fullUrl);
+          }
         }
       });
 
@@ -134,13 +140,13 @@ export class WebCrawler {
   }
 
   private isInternalLink(link: string): boolean {
-    const urlObj = new URL(link, this.initialUrl);
-    const domainWithoutProtocol = this.initialUrl.replace(/^https?:\/\//, "");
+    const urlObj = new URL(link, this.baseUrl); // Use base URL for comparison
+    const domainWithoutProtocol = this.baseUrl.replace(/^https?:\/\//, "");
     return urlObj.hostname === domainWithoutProtocol;
   }
 
   private matchesPattern(link: string): boolean {
-    // TODO: implement pattern matching follwing the glob sytax
+    // TODO: implement pattern matching following the glob syntax
     return true;
   }
 
@@ -169,7 +175,7 @@ export class WebCrawler {
     return fileExtensions.some((ext) => url.endsWith(ext));
   }
   private isSocialMediaOrEmail(url: string) {
-    // make sure that theurl doesnt include any of the social media or email
+    // make sure that the url doesn't include any of the social media or email
     const socialMediaOrEmail = [
       "facebook.com",
       "twitter.com",
