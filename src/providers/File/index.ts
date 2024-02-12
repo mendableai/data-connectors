@@ -20,6 +20,12 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
     return;
   }
 
+  async processPdf(file){
+    const fileContent = fs.readFileSync(file);
+    const data = await pdf(fileContent);
+    return data.text;
+  }
+
   async getDocuments(
     inProgress?: (progress: Progress) => void
   ): Promise<Document[]> {
@@ -97,18 +103,15 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
                 }
 
                 if (!resultAvailable) {
-                  throw new Error(
-                    "Failed to retrieve result within the maximum number of attempts."
-                  );
+                  content = await this.processPdf(this.files[i]);
                 }
                 content = resultResponse.data[resultType];
               } catch (error) {
                 console.error("Error processing document:", filePath, error);
+                content = await this.processPdf(this.files[i]);
               }
             } else {
-              const fileContent = fs.readFileSync(this.files[i]);
-              const data = await pdf(fileContent);
-              content = data.text;
+              content = await this.processPdf(this.files[i]);
             }
           } else {
             const fileContent = fs.readFileSync(this.files[i], {
