@@ -1,5 +1,7 @@
 import { createDataConnector } from "../../../DataConnector";
 
+jest.setTimeout(30000);
+
 describe("FileDataProvider", () => {
   it("should return correct documents", async () => {
     const fileDataConnector = createDataConnector({ provider: "file" });
@@ -35,7 +37,7 @@ describe("FileDataProvider", () => {
         type: "md",
       },
       {
-        content: "\n\nDummy PDF file",
+        content: expect.stringContaining("Dummy PDF file"),
         metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/) },
         provider: "file",
         type: "pdf",
