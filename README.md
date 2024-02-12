@@ -24,7 +24,7 @@ This repository contains a collection of data connectors built by [Mendable AI](
 ## Available Connectors
 
 The following connectors are currently available:
-- ✅ Files (.md, .txt, .csv, and .pdf [powered by Llama Parse](https://github.com/run-llama/llama_parse))
+- ✅ Files (.md, .txt, .csv, and .pdf [powered by LlamaParse](https://github.com/run-llama/llama_parse))
 - ✅ GitHub (Private and Public repos)
 - ✅ Google Drive
 - ✅ Notion (pages, [need to grant access](https://github.com/mendableai/data-connectors/issues/8#issuecomment-1917829463))
