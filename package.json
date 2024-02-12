@@ -1,6 +1,6 @@
 {
     "name": "@mendable/data-connectors",
-    "version": "0.0.24",
+    "version": "0.0.25",
     "description": "Data connectors for LLMs. Made by Mendable.ai",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -65,6 +65,7 @@
         "cheerio": "^1.0.0-rc.12",
         "confluence.js": "^1.7.2",
         "dotenv": "^16.4.1",
+        "form-data": "^4.0.0",
         "glob": "^10.3.10",
         "googleapis": "^131.0.0",
         "jira.js": "^3.0.2",

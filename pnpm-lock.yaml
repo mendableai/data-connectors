@@ -29,6 +29,9 @@ dependencies:
   dotenv:
     specifier: ^16.4.1
     version: 16.4.1
+  form-data:
+    specifier: ^4.0.0
+    version: 4.0.0
   glob:
     specifier: ^10.3.10
     version: 10.3.10
