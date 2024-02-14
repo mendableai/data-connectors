@@ -11,7 +11,7 @@ async function scrapWithScrapingBee(url: string): Promise<string | null> {
     const client = new ScrapingBeeClient(process.env.SCRAPING_BEE_API_KEY);
     const response = await client.get({
       url: url,
-      params: { timeout: 70000 },
+      params: { timeout: 15000 },
       headers: { "ScrapingService-Request": "TRUE" },
     });
 
