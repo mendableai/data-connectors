@@ -34,6 +34,7 @@ test(
       },
       provider: "google-drive",
       type: "document",
+      permissions: []
     });
   },
   20 * 1000

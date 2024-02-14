@@ -1,3 +1,5 @@
+import { Permission } from "./Permission";
+
 export class Document {
   id?: string;
   content: string;
@@ -9,6 +11,7 @@ export class Document {
     sourceURL?: string;
     [key: string]: any;
   };
+  permissions?: Permission[];
 
   constructor(data: Partial<Document>) {
     if (!data.content) {
