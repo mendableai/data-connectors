@@ -100,7 +100,7 @@ export class GoogleDriveDataProvider
       files = await Promise.all(promises);
     } else {
       const request = await this.drive.files.list({
-        fields: 'files(id, name, mimeType, webViewLink)',
+        fields: 'files(id, name, mimeType, webViewLink, permissions)',
       });
       files = request.data.files;
     }
@@ -134,6 +134,14 @@ export class GoogleDriveDataProvider
                 content: parsedFile.data,
                 type: "document",
                 provider: "google-drive",
+                permissions: folderFile.permissions ? folderFile.permissions.map((permission) => {
+                  return {
+                    id: permission.id,
+                    type: permission.type as "user" | "group" | "domain" | "anyone",
+                    role: permission.role as "owner" | "organizer" | "fileOrganizer" | "writer" | "commenter" | "reader",
+                    allowFileDiscovery: permission.allowFileDiscovery,
+                  };
+                }): [],
                 metadata: {
                   sourceURL: folderFile.webViewLink || "",
                   mimeType: folderFile.mimeType,
@@ -151,6 +159,14 @@ export class GoogleDriveDataProvider
           content: resultFile.data,
           type: "document",
           provider: "google-drive",
+          permissions: files[i].permissions ? files[i].permissions.map((permission) => {
+            return {
+              id: permission.id,
+              type: permission.type as "user" | "group" | "domain" | "anyone",
+              role: permission.role as "owner" | "organizer" | "fileOrganizer" | "writer" | "commenter" | "reader",
+              allowFileDiscovery: permission.allowFileDiscovery || false,
+            };
+          }): [],
           metadata: {
             sourceURL: files[i].webViewLink || "",
             mimeType: files[i].mimeType,
