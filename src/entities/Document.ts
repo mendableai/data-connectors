@@ -23,5 +23,6 @@ export class Document {
     this.type = data.type || "unknown";
     this.provider = data.provider || "unknown";
     this.metadata = data.metadata || { sourceURL: "" };
+    this.permissions = data.permissions || [];
   }
 }

@@ -24,6 +24,16 @@ test(
     expect(documents[0].metadata.sourceURL).not.toBe(null);
     expect(documents[0].metadata.mimeType).not.toBe(null);
 
+    // // not reliable test:
+    // expect(documents[3].permissions).toEqual(expect.arrayContaining([
+    //   expect.objectContaining({
+    //     id: expect.any(String),
+    //     type: 'user',
+    //     role: 'owner',
+    //     allowFileDiscovery: false
+    //   })
+    // ]));
+
     expect(documents).toContainEqual({
       content: expect.stringContaining(
         "Jack plays soccer\r\nMaria plays volleybal\r\nThey play sports"
