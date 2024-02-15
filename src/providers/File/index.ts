@@ -5,6 +5,7 @@ import pdf from "pdf-parse";
 import { Progress } from "../../entities/Progress";
 import axios from "axios";
 import FormData from "form-data";
+import { processPdfToText } from "./pdfProcessor";
 
 export type FileInputOptions = {
   files?: string[];
@@ -49,70 +50,7 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
           fileType = this.files[i].split(".").pop() || "";
           if (fileType === "pdf") {
             // if LlamaParse API key is set in the environment, use it
-            if (process.env.LLAMAPARSE_API_KEY) {
-              const apiKey = process.env.LLAMAPARSE_API_KEY;
-              const headers = {
-                Authorization: `Bearer ${apiKey}`,
-              };
-              const base_url = "https://api.cloud.llamaindex.ai/api/parsing";
-              const filePath = this.files[i];
-              const fileType2 = 'application/pdf';
-
-              try {
-                const formData = new FormData();
-                formData.append("file", fs.createReadStream(filePath), {
-                  filename: filePath,
-                  contentType: fileType2,
-                });
-
-
-
-                const uploadUrl = `${base_url}/upload`;
-                const uploadResponse = await axios.post(uploadUrl, formData, {
-                  headers: {
-                    ...headers,
-                    ...formData.getHeaders(),
-                  },
-                });
-
-                const jobId = uploadResponse.data.id;
-                const resultType = "text";
-                const resultUrl = `${base_url}/job/${jobId}/result/${resultType}`;
-
-                let resultResponse;
-                let attempt = 0;
-                const maxAttempts = 10; // Maximum number of attempts
-                let resultAvailable = false;
-
-                while (attempt < maxAttempts && !resultAvailable) {
-                  try {
-                    resultResponse = await axios.get(resultUrl, { headers });
-                    if (resultResponse.status === 200) {
-                      resultAvailable = true; // Exit condition met
-                    } else {
-                      // If the status code is not 200, increment the attempt counter and wait
-                      attempt++;
-                      await new Promise((resolve) => setTimeout(resolve, 250)); // Wait for 2 seconds
-                    }
-                  } catch (error) {
-                    console.error("Error fetching result:", error);
-                    attempt++;
-                    await new Promise((resolve) => setTimeout(resolve, 250)); // Wait for 2 seconds before retrying
-                    // You may want to handle specific errors differently
-                  }
-                }
-
-                if (!resultAvailable) {
-                  content = await this.processPdf(this.files[i]);
-                }
-                content = resultResponse.data[resultType];
-              } catch (error) {
-                console.error("Error processing document:", filePath, error);
-                content = await this.processPdf(this.files[i]);
-              }
-            } else {
-              content = await this.processPdf(this.files[i]);
-            }
+            content = await processPdfToText(this.files[i]);
           } else {
             const fileContent = fs.readFileSync(this.files[i], {
               encoding: "utf8",

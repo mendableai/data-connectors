@@ -4,7 +4,10 @@ import { google, drive_v3 } from "googleapis";
 import { Nango } from "@nangohq/node";
 import dotenv from "dotenv";
 import { Progress } from "../../entities/Progress";
+import fs from "fs";
 dotenv.config();
+import mammoth from "mammoth";
+import { processPdfToText } from "../File/pdfProcessor";
 
 export type GoogleDriveInputOptions = {
   filesIds?: string[];
@@ -17,10 +20,11 @@ export interface NangoAuthorizationOptions {
 
 export type GDriveAuthorizationOptions = {
   access_token: string;
-}
+};
 
 export interface GoogleDriveOptions
-  extends GoogleDriveInputOptions, GDriveAuthorizationOptions,
+  extends GoogleDriveInputOptions,
+    GDriveAuthorizationOptions,
     NangoAuthorizationOptions {}
 
 export class GoogleDriveDataProvider
@@ -39,6 +43,45 @@ export class GoogleDriveDataProvider
       throw new Error("Nango secret key is required");
     }
     this.nango = new Nango({ secretKey: process.env.NANGO_SECRET_KEY });
+  }
+
+  async downloadFile(fileId: string, destPath: string): Promise<string> {
+    const dest = fs.createWriteStream(destPath);
+    const response = await this.drive.files.get(
+      { fileId: fileId, alt: "media" },
+      { responseType: "stream" }
+    );
+
+    return new Promise((resolve, reject) => {
+      response.data
+        .on("end", () => {
+          // console.log("Download completed.");
+          resolve(destPath);
+        })
+        .on("error", (err) => {
+          console.error("Error downloading file.", err);
+          reject(err);
+        })
+        .pipe(dest);
+    });
+  }
+  async extractTextFromPdf(filePath: string) {
+    try {
+      return await processPdfToText(filePath);
+    } catch (error) {
+      console.error("Error extracting text:", error);
+      return "";
+    }
+  }
+  async extractTextFromDocx(filePath: string) {
+    try {
+      const result = await mammoth.extractRawText({ path: filePath });
+      const text = result.value; // The raw text
+      return text;
+    } catch (error) {
+      console.error("Error extracting text:", error);
+      throw error;
+    }
   }
 
   async authorize({ access_token }: GDriveAuthorizationOptions): Promise<void> {
@@ -86,21 +129,23 @@ export class GoogleDriveDataProvider
     }
   }
 
-  async getDocuments(inProgress?: (progress: Progress) => void): Promise<Document[] | []> {
+  async getDocuments(
+    inProgress?: (progress: Progress) => void
+  ): Promise<Document[] | []> {
     let files = [];
 
     if (this.filesIds.length > 0) {
       const promises = this.filesIds.map(async (fileId) => {
         const request = await this.drive.files.get({
           fileId: fileId,
-          fields: 'id, name, mimeType, webViewLink, permissions',
+          fields: "id, name, mimeType, webViewLink, permissions",
         });
         return request.data;
       });
       files = await Promise.all(promises);
     } else {
       const request = await this.drive.files.list({
-        fields: 'files(id, name, mimeType, webViewLink, permissions)',
+        fields: "files(id, name, mimeType, webViewLink, permissions)",
       });
       files = request.data.files;
     }
@@ -134,15 +179,27 @@ export class GoogleDriveDataProvider
                 content: parsedFile.data,
                 type: "document",
                 provider: "google-drive",
-                permissions: folderFile.permissions ? folderFile.permissions.map((permission) => {
-                  return {
-                    id: permission.id,
-                    emailAddresses: permission.emailAddress,
-                    type: permission.type as "user" | "group" | "domain" | "anyone",
-                    role: permission.role as "owner" | "organizer" | "fileOrganizer" | "writer" | "commenter" | "reader",
-                    allowFileDiscovery: permission.allowFileDiscovery,
-                  };
-                }): [],
+                permissions: folderFile.permissions
+                  ? folderFile.permissions.map((permission) => {
+                      return {
+                        id: permission.id,
+                        emailAddresses: permission.emailAddress,
+                        type: permission.type as
+                          | "user"
+                          | "group"
+                          | "domain"
+                          | "anyone",
+                        role: permission.role as
+                          | "owner"
+                          | "organizer"
+                          | "fileOrganizer"
+                          | "writer"
+                          | "commenter"
+                          | "reader",
+                        allowFileDiscovery: permission.allowFileDiscovery,
+                      };
+                    })
+                  : [],
                 metadata: {
                   sourceURL: folderFile.webViewLink || "",
                   mimeType: folderFile.mimeType,
@@ -160,15 +217,27 @@ export class GoogleDriveDataProvider
           content: resultFile.data,
           type: "document",
           provider: "google-drive",
-          permissions: files[i].permissions ? files[i].permissions.map((permission) => {
-            return {
-              id: permission.id,
-              emailAddresses: permission.emailAddress,
-              type: permission.type as "user" | "group" | "domain" | "anyone",
-              role: permission.role as "owner" | "organizer" | "fileOrganizer" | "writer" | "commenter" | "reader",
-              allowFileDiscovery: permission.allowFileDiscovery || false,
-            };
-          }): [],
+          permissions: files[i].permissions
+            ? files[i].permissions.map((permission) => {
+                return {
+                  id: permission.id,
+                  emailAddresses: permission.emailAddress,
+                  type: permission.type as
+                    | "user"
+                    | "group"
+                    | "domain"
+                    | "anyone",
+                  role: permission.role as
+                    | "owner"
+                    | "organizer"
+                    | "fileOrganizer"
+                    | "writer"
+                    | "commenter"
+                    | "reader",
+                  allowFileDiscovery: permission.allowFileDiscovery || false,
+                };
+              })
+            : [],
           metadata: {
             sourceURL: files[i].webViewLink || "",
             mimeType: files[i].mimeType,
@@ -203,14 +272,18 @@ export class GoogleDriveDataProvider
       }
 
       case "application/pdf": {
-        resultFile = await this.drive.files.get(
-          {
-            fileId: file.id,
-            alt: "media",
-          },
-          { responseType: "stream" }
-        );
-        break;
+        const fileId = file.id;
+        const destPath = "./temp/temp.pdf";
+
+        // Download and then extract text
+        const text = await this.downloadFile(fileId, destPath)
+          .then(this.extractTextFromPdf)
+          .catch(console.error);
+
+        resultFile = {
+          data: text,
+        };
+        return resultFile;
       }
 
       case "text/plain": {
@@ -221,7 +294,42 @@ export class GoogleDriveDataProvider
         break;
       }
 
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+        const fileId = file.id;
+        const destPath = "./temp/temp.docx";
+
+        // Download and then extract text
+        const text = await this.downloadFile(fileId, destPath)
+          .then(this.extractTextFromDocx)
+          .catch(console.error);
+
+        resultFile = {
+          data: text,
+        };
+        return resultFile;
+      }
+
+      // slides
+      case "application/vnd.google-apps.presentation": {
+        // "11egE60_gv8HvWcZQLU7RZ72fLgG22hfodIafhtWdo6A"
+        resultFile = await this.drive.files.export({
+          fileId: file.id,
+          mimeType: "text/plain",
+        });
+        return resultFile;
+      }
+
       default: {
+        // TRY TO EXPORT AS PLAIN TEXT Anyway
+        try {
+          resultFile = await this.drive.files.export({
+            fileId: file.id,
+            mimeType: "text/plain",
+          });
+          return resultFile;
+        } catch (error) {
+          return { data: "" };
+        }
         break;
       }
     }

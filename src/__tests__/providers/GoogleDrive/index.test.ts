@@ -13,6 +13,9 @@ test(
       nango_connection_id: process.env.NANGO_CONNECTION_ID_GOOGLE_DRIVE_TEST,
     });
 
+    await googleDriveDataConnector.setOptions({
+      filesIds:['1zGA5Kxy_itvUDnSAC9PAlK_yb5oB6OJt']
+    })
     const documents = await googleDriveDataConnector.getDocuments();
     
     expect(documents.length).toBeGreaterThan(0);

@@ -1,81 +1,88 @@
 {
-    "name": "@mendable/data-connectors",
-    "version": "0.0.31",
-    "description": "Data connectors for LLMs. Made by Mendable.ai",
-    "main": "dist/index.js",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.ts",
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsc",
-        "build-tsup": "tsup",
-        "pre-publish": "npm run test",
-        "publish": "npm run build-tsup && npm publish --access public",
-        "format": "prettier --write \"src/**/*.(js|ts)\"",
-        "lint": "eslint src --ext .js,.ts",
-        "lint:fix": "eslint src --fix --ext .js,.ts",
-        "test": "jest",
-        "prepare": "npm run build",
-        "preversion": "npm run lint",
-        "version": "npm run format && git add -A src",
-        "postversion": "git push && git push --tags"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/mendableai/data-connectors.git"
-    },
-    "keywords": [
-        "llm",
-        "ai",
-        "data connectors",
-        "boilerplate",
-        "typescript"
-    ],
-    "author": "Mendable AI",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/mendableai/data-connectors/issues"
-    },
-    "homepage": "https://github.com/mendableai/data-connectors#readme",
-    "devDependencies": {
-        "@babel/preset-env": "^7.23.8",
-        "@babel/preset-typescript": "^7.23.3",
-        "@types/dotenv": "^8.2.0",
-        "@types/jest": "^29.5.11",
-        "@types/pdf-parse": "^1.1.4",
-        "@types/xml2js": "^0.4.14",
-        "@typescript-eslint/eslint-plugin": "6.19.1",
-        "@typescript-eslint/parser": "6.19.1",
-        "babel-jest": "^29.7.0",
-        "eslint": "8.35.0",
-        "eslint-plugin-jest": "27.2.1",
-        "jest": "^29.7.0",
-        "prettier": "2.8.4",
-        "ts-jest": "^29.1.1",
-        "typescript": "4.9.5"
-    },
-    "dependencies": {
-        "@nangohq/node": "^0.36.100",
-        "@notionhq/client": "^2.2.14",
-        "@octokit/auth-oauth-user": "^4.0.1",
-        "async": "^3.2.5",
-        "axios": "^1.6.5",
-        "cheerio": "^1.0.0-rc.12",
-        "confluence.js": "^1.7.2",
-        "dotenv": "^16.4.1",
-        "form-data": "^4.0.0",
-        "glob": "^10.3.10",
-        "googleapis": "^131.0.0",
-        "jira.js": "^3.0.2",
-        "node-html-parser": "^6.1.12",
-        "octokit": "^3.1.2",
-        "pdf-parse": "^1.1.1",
-        "puppeteer": "^21.10.0",
-        "scrapingbee": "^1.7.4",
-        "tsup": "^8.0.1",
-        "xml2js": "^0.6.2",
-        "youtube-transcript": "^1.0.6"
-    }
+  "name": "@mendable/data-connectors",
+  "version": "0.0.32-beta.1",
+  "description": "Data connectors for LLMs. Made by Mendable.ai",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build-tsup": "tsup",
+    "pre-publish": "npm run test",
+    "publish": "npm run build-tsup && npm publish --access public",
+    "format": "prettier --write \"src/**/*.(js|ts)\"",
+    "lint": "eslint src --ext .js,.ts",
+    "lint:fix": "eslint src --fix --ext .js,.ts",
+    "test": "jest",
+    "prepare": "npm run build",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mendableai/data-connectors.git"
+  },
+  "keywords": [
+    "llm",
+    "ai",
+    "data connectors",
+    "boilerplate",
+    "typescript"
+  ],
+  "author": "Mendable AI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mendableai/data-connectors/issues"
+  },
+  "homepage": "https://github.com/mendableai/data-connectors#readme",
+  "devDependencies": {
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-typescript": "^7.23.3",
+    "@types/dotenv": "^8.2.0",
+    "@types/jest": "^29.5.11",
+    "@types/pdf-parse": "^1.1.4",
+    "@types/xml2js": "^0.4.14",
+    "@typescript-eslint/eslint-plugin": "6.19.1",
+    "@typescript-eslint/parser": "6.19.1",
+    "babel-jest": "^29.7.0",
+    "eslint": "8.35.0",
+    "eslint-plugin-jest": "27.2.1",
+    "jest": "^29.7.0",
+    "prettier": "2.8.4",
+    "ts-jest": "^29.1.1",
+    "typescript": "4.9.5"
+  },
+  "dependencies": {
+    "@nangohq/node": "^0.36.100",
+    "@notionhq/client": "^2.2.14",
+    "@octokit/auth-oauth-user": "^4.0.1",
+    "async": "^3.2.5",
+    "axios": "^1.6.5",
+    "cheerio": "^1.0.0-rc.12",
+    "confluence.js": "^1.7.2",
+    "dotenv": "^16.4.1",
+    "form-data": "^4.0.0",
+    "glob": "^10.3.10",
+    "googleapis": "^131.0.0",
+    "jira.js": "^3.0.2",
+    "mammoth": "^1.6.0",
+    "node-html-parser": "^6.1.12",
+    "octokit": "^3.1.2",
+    "pdf-parse": "^1.1.1",
+    "puppeteer": "^21.10.0",
+    "scrapingbee": "^1.7.4",
+    "tsup": "^8.0.1",
+    "xml2js": "^0.6.2",
+    "youtube-transcript": "^1.0.6"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "*.docx",
+      "*.json"
+    ]
+  }
 }
