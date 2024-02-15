@@ -93,7 +93,7 @@ export class GoogleDriveDataProvider
       const promises = this.filesIds.map(async (fileId) => {
         const request = await this.drive.files.get({
           fileId: fileId,
-          fields: 'id, name, mimeType, webViewLink',
+          fields: 'id, name, mimeType, webViewLink, permissions',
         });
         return request.data;
       });
@@ -123,7 +123,7 @@ export class GoogleDriveDataProvider
         const query = `'${folderId}' in parents and trashed=false`;
         const folderRequest = await this.drive.files.list({
           q: query,
-          fields: "files(id, name, mimeType, webViewLink)",
+          fields: "files(id, name, mimeType, webViewLink, permissions)",
         });
         const folderFiles = folderRequest.data.files;
         if (folderFiles.length > 0) {
@@ -137,6 +137,7 @@ export class GoogleDriveDataProvider
                 permissions: folderFile.permissions ? folderFile.permissions.map((permission) => {
                   return {
                     id: permission.id,
+                    emailAddresses: permission.emailAddress,
                     type: permission.type as "user" | "group" | "domain" | "anyone",
                     role: permission.role as "owner" | "organizer" | "fileOrganizer" | "writer" | "commenter" | "reader",
                     allowFileDiscovery: permission.allowFileDiscovery,
@@ -162,6 +163,7 @@ export class GoogleDriveDataProvider
           permissions: files[i].permissions ? files[i].permissions.map((permission) => {
             return {
               id: permission.id,
+              emailAddresses: permission.emailAddress,
               type: permission.type as "user" | "group" | "domain" | "anyone",
               role: permission.role as "owner" | "organizer" | "fileOrganizer" | "writer" | "commenter" | "reader",
               allowFileDiscovery: permission.allowFileDiscovery || false,

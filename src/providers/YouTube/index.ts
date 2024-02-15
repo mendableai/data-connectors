@@ -1,7 +1,7 @@
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { YoutubeTranscript } from "youtube-transcript";
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer";
 import { Progress } from "../../entities/Progress";
 
 export type YouTubeInputOptions = {
@@ -69,21 +69,21 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
     const urls: string[] = [];
 
     try {
-      const browser = await puppeteer.launch({ headless: "new" });
-      const page = await browser.newPage();
+      // const browser = await puppeteer.launch({ headless: "new" });
+      // const page = await browser.newPage();
 
-      await page.goto(channelUrl);
-      const thubmnails = await page.$$("a#thumbnail");
-      for (const thumbnail of thubmnails) {
-        const href = await thumbnail.evaluate((node) =>
-          node.getAttribute("href")
-        );
-        if (href != null) {
-          urls.push(`https://www.youtube.com${href}`);
-        }
-      }
+      // await page.goto(channelUrl);
+      // const thubmnails = await page.$$("a#thumbnail");
+      // for (const thumbnail of thubmnails) {
+      //   const href = await thumbnail.evaluate((node) =>
+      //     node.getAttribute("href")
+      //   );
+      //   if (href != null) {
+      //     urls.push(`https://www.youtube.com${href}`);
+      //   }
+      // }
 
-      await browser.close();
+      // await browser.close();
       return urls;
     } catch (error) {
       console.error("Error fetching video URLs from channel:", error);

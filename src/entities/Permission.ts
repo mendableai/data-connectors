@@ -6,6 +6,7 @@ export class Permission {
     // domain – Domain name string, such as "thecompany.com".
     // anyone: there is no displayName.
 
+  emailAdress?: string;
   type: 'user' | 'group' | 'domain' | 'anyone';
   role: 'owner' | 'organizer' | 'fileOrganizer' | 'writer' | 'commenter' | 'reader';
   allowFileDiscovery?: boolean;
@@ -22,5 +23,6 @@ export class Permission {
     this.allowFileDiscovery = data.allowFileDiscovery;
     this.createdAt = data.createdAt || new Date();
     this.updatedAt = data.updatedAt || new Date();
+    this.emailAdress = data.emailAdress;
   }
 }
