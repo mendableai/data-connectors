@@ -183,6 +183,7 @@ export class GoogleDriveDataProvider
                   ? folderFile.permissions.map((permission) => {
                       return {
                         id: permission.id,
+                        displayName: permission.displayName,
                         emailAddresses: permission.emailAddress,
                         type: permission.type as
                           | "user"
@@ -221,6 +222,7 @@ export class GoogleDriveDataProvider
             ? files[i].permissions.map((permission) => {
                 return {
                   id: permission.id,
+                  displayName: permission.displayName,
                   emailAddresses: permission.emailAddress,
                   type: permission.type as
                     | "user"
