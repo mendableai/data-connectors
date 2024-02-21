@@ -204,6 +204,7 @@ export class GoogleDriveDataProvider
                 metadata: {
                   sourceURL: folderFile.webViewLink || "",
                   mimeType: folderFile.mimeType,
+                  title: folderFile.name,
                 },
               });
             }
@@ -243,6 +244,7 @@ export class GoogleDriveDataProvider
           metadata: {
             sourceURL: files[i].webViewLink || "",
             mimeType: files[i].mimeType,
+            title: files[i].name,
           },
         });
       }

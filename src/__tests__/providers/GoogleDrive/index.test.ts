@@ -26,6 +26,7 @@ test(
     expect(documents[0].metadata).not.toBe(null);
     expect(documents[0].metadata.sourceURL).not.toBe(null);
     expect(documents[0].metadata.mimeType).not.toBe(null);
+    expect(documents[0].metadata.title).not.toBe(null);
 
     // // not reliable test:
     // expect(documents[3].permissions).toEqual(expect.arrayContaining([
@@ -44,6 +45,7 @@ test(
     //   metadata: {
     //     sourceURL: expect.any(String),
     //     mimeType: expect.any(String),
+    //     title: expect.any(String),
     //   },
     //   provider: "google-drive",
     //   type: "document",
