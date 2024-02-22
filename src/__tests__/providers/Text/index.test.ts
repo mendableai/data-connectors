@@ -56,7 +56,10 @@ describe("Text Data Connector", () => {
         },
         {
           content: "Violets are yellow",
-          source: "https://example3.com",  
+          source: "https://example3.com",
+          metadata: {
+            title: 'Violets'
+          }
         },
       ]
     });
@@ -82,6 +85,7 @@ describe("Text Data Connector", () => {
     expect(documents[2].content).toBe("Violets are yellow");
     expect(documents[2].provider).toBe("text");
     expect(documents[2].metadata.sourceURL).toBe("https://example3.com");
+    expect(documents[2].metadata.title).toBe("Violets");
   });
 
   test("Text Get Documents", async () => {
