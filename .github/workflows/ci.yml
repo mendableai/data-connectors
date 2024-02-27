@@ -20,7 +20,18 @@ jobs:
       - name: create env file
         run: |
           touch .env
-          echo ENGINE_API_KEY=${{ secrets.ENGINE_API_KEY }} >> .env
+          echo GOOGLE_DRIVE_CLIENT_ID=${{ secrets.GOOGLE_DRIVE_CLIENT_ID }} >> .env
+          echo GOOGLE_DRIVE_CLIENT_SECRET=${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }} >> .env
+          echo GOOGLE_DRIVE_REDIRECT_URI=${{ secrets.GOOGLE_DRIVE_REDIRECT_URI }} >> .env
+          echo NANGO_CONFLUENCE_CONNECTION_ID_TEST=${{ secrets.NANGO_CONFLUENCE_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_CONNECTION_ID_TEST=${{ secrets.NANGO_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_GITHUB_CONNECTION_ID_TEST=${{ secrets.NANGO_GITHUB_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_GOOGLE_DRIVE_CONNECTION_ID_TEST=${{ secrets.NANGO_GOOGLE_DRIVE_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_JIRA_CONNECTION_ID_TEST=${{ secrets.NANGO_JIRA_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_NOTION_CONNECTION_ID_TEST=${{ secrets.NANGO_NOTION_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_SALESFORCE_CONNECTION_ID_TEST=${{ secrets.NANGO_SALESFORCE_CONNECTION_ID_TEST }} >> .env
+          echo NANGO_SECRET_KEY=${{ secrets.NANGO_SECRET_KEY }} >> .env
+          echo SCRAPING_BEE_API_KEY=${{ secrets.SCRAPING_BEE_API_KEY }} >> .env
       - name: Install Dependencies
         run: pnpm install
       - name: Run Tests
