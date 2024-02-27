@@ -9,14 +9,14 @@ test(
       provider: "confluence",
     });
 
-    if (!process.env.NANGO_CONNECTION_ID_TEST) {
+    if (!process.env.NANGO_CONFLUENCE_CONNECTION_ID_TEST) {
       throw new Error(
-        "Please specify the NANGO_CONNECTION_ID_TEST environment variable."
+        "Please specify the NANGO_CONFLUENCE_CONNECTION_ID_TEST environment variable."
       );
     }
 
     await confluenceDataConnector.authorizeNango({
-      nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST,
+      nango_connection_id: process.env.NANGO_CONFLUENCE_CONNECTION_ID_TEST,
     });
 
     const pages = await confluenceDataConnector.getDocuments();

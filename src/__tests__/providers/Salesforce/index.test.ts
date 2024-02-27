@@ -9,14 +9,14 @@ test(
       provider: "salesforce",
     });
 
-    if (!process.env.NANGO_CONNECTION_ID_TEST) {
+    if (!process.env.NANGO_SALESFORCE_CONNECTION_ID_TEST) {
       throw new Error(
-        "Please specify the NANGO_CONNECTION_ID_TEST environment variable."
+        "Please specify the NANGO_SALESFORCE_CONNECTION_ID_TEST environment variable."
       );
     }
 
     await salesforceDataConnector.authorizeNango({
-      nango_connection_id: process.env.NANGO_CONNECTION_ID_TEST,
+      nango_connection_id: process.env.NANGO_SALESFORCE_CONNECTION_ID_TEST,
     });
 
     salesforceDataConnector.setOptions({ mode: "accounts" });

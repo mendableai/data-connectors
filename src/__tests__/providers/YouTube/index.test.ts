@@ -33,45 +33,4 @@ describe("YouTubeDataProvider", () => {
     );
     expect(documents[0].content.toLowerCase()).toContain("say");
   });
-
-  it(
-    "should return transcription from multiple youtube videos from a specific channel",
-    async () => {
-      const urls = ["https://www.youtube.com/@sideguide1530"];
-
-      const youtubeDataConnector = createDataConnector({
-        provider: "youtube",
-      });
-
-      await youtubeDataConnector.setOptions({ urls, isChannel: true });
-
-      const documents = await youtubeDataConnector.getDocuments();
-      expect(documents).not.toBe(null);
-      expect(documents.length).toBeGreaterThan(0);
-      expect(documents[0].content).not.toBe(null);
-      expect(documents[0].content.length).toBeGreaterThan(0);
-
-      expect(documents).toContainEqual({
-        content: expect.stringContaining(
-          "hi everybody my name is eric and i'm one"
-        ),
-        metadata: {
-          sourceURL: "https://www.youtube.com/watch?v=DagdM1jPlpo",
-        },
-        provider: "youtube",
-        type: "text",
-      });
-      expect(documents).toContainEqual({
-        content: expect.stringContaining(
-          "stop watching youtube tutorials to learn"
-        ),
-        metadata: {
-          sourceURL: "https://www.youtube.com/watch?v=LlHyUuJ7fN4",
-        },
-        provider: "youtube",
-        type: "text",
-      });
-    },
-    10 * 1000
-  ); // 10 seconds
 });

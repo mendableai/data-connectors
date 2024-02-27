@@ -14,9 +14,12 @@ test(
     });
 
     await googleDriveDataConnector.setOptions({
-      filesIds:['1zGA5Kxy_itvUDnSAC9PAlK_yb5oB6OJt']
+      filesIds:[]
     })
     const documents = await googleDriveDataConnector.getDocuments();
+    for (const doc of documents) {
+      console.log({doc})
+    }
     
     expect(documents.length).toBeGreaterThan(0);
     expect(documents[0].content).not.toBe(null);
