@@ -311,15 +311,30 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
 
     let req: SearchResponse = undefined;
 
+    let exponentialBackoff = 1;
+
     do {
-      req = await this.notion.search({
-        start_cursor: req?.next_cursor,
-        filter: {
-          property: "object",
-          value: "page",
-        },
-        page_size: 100,
-      });
+      try {
+        req = await this.notion.search({
+          start_cursor: req?.next_cursor,
+          filter: {
+            property: "object",
+            value: "page",
+          },
+          page_size: 100,
+        });
+      } catch (e) {
+        if (e.code === "rate_limited") {
+          console.log(
+            `Rate limited, retrying in ${exponentialBackoff} seconds...`
+          );
+          await new Promise((resolve) =>
+            setTimeout(resolve, exponentialBackoff * 1000)
+          );
+          exponentialBackoff *= 2;
+          continue;
+        }
+      }
 
       const pages = req.results.filter(
         (x) => x.object === "page"
