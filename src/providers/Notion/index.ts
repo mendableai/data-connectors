@@ -46,29 +46,44 @@ type NotionPageWithBlocks = {
  */
 async function recursiveBlockChildren(
   notion: Client,
-  block_id: string
+  block_id: string,
+  delay: number = 500 // Initial delay in milliseconds
 ): Promise<NotionBlockWithChildren[]> {
   const blocks: NotionBlockWithChildren[] = [];
-  let req: ListBlockChildrenResponse;
-  const i = 0;
+  let req: ListBlockChildrenResponse | null = null;
+  let hasMore = true;
 
   do {
-    req = await notion.blocks.children.list({ block_id });
-
-    const results = req.results as BlockObjectResponse[];
-
-    for (const block of results) {
-      // Using recursive function calls in here is fine,
-      // because we use (real) async functions,
-      // so the call stack will not overflow.
-      blocks.push({
-        block,
-        children: block.has_children
-          ? await recursiveBlockChildren(notion, block.id)
-          : [],
+    try {
+      req = await notion.blocks.children.list({ 
+        block_id,
+        start_cursor: req?.next_cursor
       });
+
+      const results = req.results as BlockObjectResponse[];
+
+      for (const block of results) {
+        blocks.push({
+          block,
+          children: block.has_children
+            ? await recursiveBlockChildren(notion, block.id, delay)
+            : [],
+        });
+      }
+      hasMore = req ? req.has_more : true;
+    } catch (error) {
+      if (error.code === "rate_limited") {
+        // Exponential backoff in case of rate limiting
+        const waitTime = delay * 2;
+        console.log(`Rate limited. Retrying in ${waitTime / 1000} seconds.`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        delay = waitTime; // Update delay for next iteration
+        hasMore = true; // Assume there might be more pages to fetch
+      } else {
+        throw error; // Rethrow error if it's not a rate limit issue
+      }
     }
-  } while (req.has_more);
+  } while (hasMore);
 
   return blocks;
 }
@@ -313,6 +328,7 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
 
     let exponentialBackoff = 1;
 
+    let hasMore = true;
     do {
       try {
         req = await this.notion.search({
@@ -323,34 +339,38 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
           },
           page_size: 100,
         });
+        hasMore = req ? req.has_more : true;
       } catch (e) {
-        if (e.code === "rate_limited") {
-          console.log(
-            `Rate limited, retrying in ${exponentialBackoff} seconds...`
-          );
-          await new Promise((resolve) =>
-            setTimeout(resolve, exponentialBackoff * 1000)
-          );
-          exponentialBackoff *= 2;
-          continue;
-        }
+        console.log("Notion error:\n")
+        console.log(e);
+        console.log(
+          `Rate limited, retrying in ${exponentialBackoff} seconds...`
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, exponentialBackoff * 1000)
+        );
+        exponentialBackoff *= 2;
+        hasMore = true; // Assume there might be more pages to fetch after handling rate limit
+        continue;
       }
 
-      const pages = req.results.filter(
-        (x) => x.object === "page"
-      ) as PageObjectResponse[];
+      if (req && req.results) {
+        const pages = req.results.filter(
+          (x) => x.object === "page"
+        ) as PageObjectResponse[];
 
-      const pagesWithBlocks: NotionPageWithBlocks[] = await Promise.all(
-        pages.map(async (page) => {
-          return {
-            page,
-            blocks: await recursiveBlockChildren(this.notion, page.id),
-          };
-        })
-      );
+        const pagesWithBlocks: NotionPageWithBlocks[] = await Promise.all(
+          pages.map(async (page) => {
+            return {
+              page,
+              blocks: await recursiveBlockChildren(this.notion, page.id),
+            };
+          })
+        );
 
-      all.push(...pagesWithBlocks);
-    } while (req.has_more);
+        all.push(...pagesWithBlocks);
+      }
+    } while (hasMore);
 
     const pages = all.map(({ page, blocks }) => {
       return {
