@@ -10,6 +10,7 @@ import {
   RichTextItemResponse,
   SearchResponse,
 } from "@notionhq/client/build/src/api-endpoints";
+import exponentialBackoffDelay from "../../utils/ExponentialBackoff";
 
 export type NotionInputOptions = object;
 
@@ -58,13 +59,7 @@ async function recursiveBlockChildren(
       req = await notion.blocks.children.list({ block_id });
     } catch (error) {
       if (error.code === APIErrorCode.RateLimited) {
-        console.log(
-          `Rate limited, retrying in ${exponentialBackoff} seconds...`
-        );
-        await new Promise((resolve) =>
-          setTimeout(resolve, exponentialBackoff * 1000)
-        );
-        exponentialBackoff *= 2;
+        exponentialBackoff = await exponentialBackoffDelay(exponentialBackoff);
         continue;
       }
     }
@@ -338,13 +333,9 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
         });
       } catch (error) {
         if (error.code === APIErrorCode.RateLimited) {
-          console.log(
-            `Rate limited, retrying in ${exponentialBackoff} seconds...`
+          exponentialBackoff = await exponentialBackoffDelay(
+            exponentialBackoff
           );
-          await new Promise((resolve) =>
-            setTimeout(resolve, exponentialBackoff * 1000)
-          );
-          exponentialBackoff *= 2;
           continue;
         }
       }
