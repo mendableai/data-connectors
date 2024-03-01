@@ -1,5 +1,5 @@
 import { Nango } from "@nangohq/node";
-import { Client } from "@notionhq/client";
+import { APIErrorCode, Client } from "@notionhq/client";
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { NangoAuthorizationOptions } from "../GoogleDrive";
@@ -51,10 +51,23 @@ async function recursiveBlockChildren(
   const blocks: NotionBlockWithChildren[] = [];
   let req: ListBlockChildrenResponse;
   const i = 0;
+  let exponentialBackoff = 1;
 
   do {
-    req = await notion.blocks.children.list({ block_id });
-
+    try {
+      req = await notion.blocks.children.list({ block_id });
+    } catch (error) {
+      if (error.code === APIErrorCode.RateLimited) {
+        console.log(
+          `Rate limited, retrying in ${exponentialBackoff} seconds...`
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, exponentialBackoff * 1000)
+        );
+        exponentialBackoff *= 2;
+        continue;
+      }
+    }
     const results = req.results as BlockObjectResponse[];
 
     for (const block of results) {
@@ -323,8 +336,8 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
           },
           page_size: 100,
         });
-      } catch (e) {
-        if (e.code === "rate_limited") {
+      } catch (error) {
+        if (error.code === APIErrorCode.RateLimited) {
           console.log(
             `Rate limited, retrying in ${exponentialBackoff} seconds...`
           );
