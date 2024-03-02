@@ -14,6 +14,7 @@ import exponentialBackoffDelay from "../../utils/ExponentialBackoff";
 
 export type NotionInputOptions = object;
 
+let exponentialBackoff = 1;
 export type NotionAuthorizationOptions = {
   token?: string;
 };
@@ -51,8 +52,6 @@ async function recursiveBlockChildren(
 ): Promise<NotionBlockWithChildren[]> {
   const blocks: NotionBlockWithChildren[] = [];
   let req: ListBlockChildrenResponse;
-  const i = 0;
-  let exponentialBackoff = 1;
 
   do {
     try {
@@ -62,6 +61,9 @@ async function recursiveBlockChildren(
         exponentialBackoff = await exponentialBackoffDelay(exponentialBackoff);
         continue;
       }
+      // Handle other errors
+      console.error("Error occurred:", error);
+      break; // Exit the loop if an error occurs
     }
     const results = req.results as BlockObjectResponse[];
 
@@ -76,7 +78,7 @@ async function recursiveBlockChildren(
           : [],
       });
     }
-  } while (req.has_more);
+  } while (req && req.has_more);
 
   return blocks;
 }
@@ -319,8 +321,6 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
 
     let req: SearchResponse = undefined;
 
-    let exponentialBackoff = 1;
-
     do {
       try {
         req = await this.notion.search({
@@ -338,6 +338,9 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
           );
           continue;
         }
+
+        console.error("Error occurred:", error);
+        break;
       }
 
       const pages = req.results.filter(
@@ -354,7 +357,7 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
       );
 
       all.push(...pagesWithBlocks);
-    } while (req.has_more);
+    } while (req && req.has_more);
 
     const pages = all.map(({ page, blocks }) => {
       return {
