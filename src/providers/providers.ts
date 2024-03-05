@@ -28,6 +28,7 @@ import {
 } from "./Notion";
 import { SalesforceDataProvider, SalesforceInputOptions } from "./Salesforce";
 import { TextDataProvider, TextInputOptions } from "./Text";
+import { VideoFileDataProvider, VideoFileInputOptions } from "./Video";
 import { WebScraperDataProvider, WebScraperOptions } from "./WebScraper/index";
 import { YouTubeDataProvider, YouTubeInputOptions } from "./YouTube";
 import { ZendeskDataProvider, ZendeskInputOptions } from "./Zendesk";
@@ -48,6 +49,7 @@ export const providers: Provider = {
   notion: new NotionDataProvider(),
   jira: new JiraDataProvider(),
   salesforce: new SalesforceDataProvider(),
+  video: new VideoFileDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -118,6 +120,12 @@ type ProviderConfig = {
     AuthorizeOptions: JiraAuthorizationOptions;
     NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
+  video: {
+    DataProvider: VideoFileDataProvider;
+    Options: VideoFileInputOptions;
+    AuthorizeOptions: VideoFileInputOptions;
+    NangoAuthorizeOptions: any;
+  }
   // Add other providers here...
 };
 

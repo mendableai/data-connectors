@@ -32,6 +32,7 @@ jobs:
           echo NANGO_SALESFORCE_CONNECTION_ID_TEST=${{ secrets.NANGO_SALESFORCE_CONNECTION_ID_TEST }} >> .env
           echo NANGO_SECRET_KEY=${{ secrets.NANGO_SECRET_KEY }} >> .env
           echo SCRAPING_BEE_API_KEY=${{ secrets.SCRAPING_BEE_API_KEY }} >> .env
+          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
       - name: Install Dependencies
         run: pnpm install
       - name: Run Tests
