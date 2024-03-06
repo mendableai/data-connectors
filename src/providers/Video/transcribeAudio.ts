@@ -26,6 +26,7 @@ export const transcribeAudio = async (audioBuffer: ArrayBuffer): Promise<string>
       });
       
       transcription += response.text;
+      await fs.promises.unlink(audioFilePath).catch(console.error);
     }
   } catch (error) {
     console.error("Error during transcription process:", error);
@@ -50,32 +51,30 @@ async function splitAudioBuffer(buffer: ArrayBuffer, maxChunkSize: number): Prom
 }
 
 async function convertChunkToAudioData(chunk: ArrayBuffer): Promise<string> {
-  return new Promise((resolve, reject) => {
-    try {
-      const buffer = Buffer.from(chunk);
-      const tempFilePath = path.join(os.tmpdir(), `temp-audio.mp3`);
-      const writable = fs.createWriteStream(tempFilePath);
-      const readable = new Readable();
+  let tempFilePath = '';
+  try {
+    const buffer = Buffer.from(chunk);
+    tempFilePath = path.join(os.tmpdir(), `temp-audio.mp3`);
+    const writable = fs.createWriteStream(tempFilePath);
+    const readable = new Readable({
+      read() {
+        this.push(buffer);
+        this.push(null); // EOF
+      }
+    });
 
-      readable._read = () => {}; // No-op
-      readable.push(buffer);
-      readable.push(null); // EOF
-
+    await new Promise((resolve, reject) => {
       ffmpeg(readable)
         .inputFormat('mp3')
         .toFormat('mp3')
-        .on('error', (err) => {
-          console.error("Error converting chunk to audio data:", err);
-          reject(err);
-        })
-        .on('end', () => {
-          console.log('File has been converted successfully');
-          resolve(tempFilePath); // Resolve with the file path instead of the data
-        })
+        .on('error', reject)
+        .on('end', resolve)
         .pipe(writable);
-    } catch (error) {
-      console.error("Error in convertChunkToAudioData:", error);
-      reject(error); // Reject the promise with the error
-    }
-  });
+    });
+
+    return tempFilePath;
+  } catch (error) {
+    console.error("Error in convertChunkToAudioData:", error);
+    throw error;
+  }
 }

@@ -4,33 +4,42 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 import os from 'os';
 import path from 'path';
+import fs from 'fs';
 
 export const transformVideoToAudio = async (videoBuffer: ArrayBuffer): Promise<ArrayBuffer> => {
-  try {
-    const videoBufferNode = Buffer.from(videoBuffer);
-    return new Promise<ArrayBuffer>((resolve, reject) => {
-      const inputPath = path.join(os.tmpdir(), `temp-video-input.mp4`);
-      const outputPath = path.join(os.tmpdir(), `temp-audio-output.flac`);
-      require('fs').writeFileSync(inputPath, videoBufferNode);
+  const videoBufferNode = Buffer.from(videoBuffer);
+  const inputPath = path.join(os.tmpdir(), `temp-video-input.mp4`);
+  const outputPath = path.join(os.tmpdir(), `temp-audio-output.mp3`);
+  fs.writeFileSync(inputPath, videoBufferNode);
 
-      ffmpeg(inputPath)
-        .toFormat('mp3')
-        .on('error', (err) => {
-          console.error('An error occurred: ' + err.message);
-          reject(err);
-        })
-        .on('end', () => {
-          const audioBuffer = require('fs').readFileSync(outputPath);
+  return new Promise<ArrayBuffer>((resolve, reject) => {
+    ffmpeg(inputPath)
+      .toFormat('mp3')
+      .on('error', (err) => {
+        console.error('An error occurred: ' + err.message);
+        cleanupFiles(inputPath, outputPath);
+        reject(err);
+      })
+      .on('end', () => {
+        try {
+          const audioBuffer = fs.readFileSync(outputPath);
           const audioArrayBuffer = audioBuffer.buffer.slice(audioBuffer.byteOffset, audioBuffer.byteOffset + audioBuffer.byteLength);
-
-          require('fs').unlinkSync(inputPath);
-          require('fs').unlinkSync(outputPath);
-
+          cleanupFiles(inputPath, outputPath);
           resolve(audioArrayBuffer);
-        })
-        .save(outputPath);
-    });
+        } catch (error) {
+          cleanupFiles(inputPath, outputPath);
+          reject(new Error(`Failed to read the output audio file: ${error}`));
+        }
+      })
+      .save(outputPath);
+  });
+};
+
+function cleanupFiles(inputPath: string, outputPath: string) {
+  try {
+    fs.unlinkSync(inputPath);
+    fs.unlinkSync(outputPath);
   } catch (error) {
-    throw new Error(`Failed to transform video to audio: ${error}`);
+    console.error(`Failed to clean up temporary files: ${error}`);
   }
 }
