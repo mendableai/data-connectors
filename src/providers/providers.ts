@@ -49,7 +49,7 @@ export const providers: Provider = {
   notion: new NotionDataProvider(),
   jira: new JiraDataProvider(),
   salesforce: new SalesforceDataProvider(),
-  video: new VideoFileDataProvider(),
+  "video": new VideoFileDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -120,12 +120,12 @@ type ProviderConfig = {
     AuthorizeOptions: JiraAuthorizationOptions;
     NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
-  video: {
+  "video": {
     DataProvider: VideoFileDataProvider;
     Options: VideoFileInputOptions;
     AuthorizeOptions: VideoFileInputOptions;
-    NangoAuthorizeOptions: any;
-  }
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
+  };
   // Add other providers here...
 };
 
