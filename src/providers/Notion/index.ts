@@ -10,11 +10,10 @@ import {
   RichTextItemResponse,
   SearchResponse,
 } from "@notionhq/client/build/src/api-endpoints";
-import exponentialBackoffDelay from "../../utils/ExponentialBackoff";
+import rateLimitDelay from "../../utils/RateLimitDelay";
 
 export type NotionInputOptions = object;
 
-let exponentialBackoff = 1;
 export type NotionAuthorizationOptions = {
   token?: string;
 };
@@ -58,7 +57,7 @@ async function recursiveBlockChildren(
       req = await notion.blocks.children.list({ block_id });
     } catch (error) {
       if (error.code === APIErrorCode.RateLimited) {
-        exponentialBackoff = await exponentialBackoffDelay(exponentialBackoff);
+        await rateLimitDelay(error.headers.get("retry-after"));
         continue;
       }
       // Handle other errors
@@ -333,9 +332,7 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
         });
       } catch (error) {
         if (error.code === APIErrorCode.RateLimited) {
-          exponentialBackoff = await exponentialBackoffDelay(
-            exponentialBackoff
-          );
+          await rateLimitDelay(error.headers.get("retry-after"));
           continue;
         }
 

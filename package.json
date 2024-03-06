@@ -44,6 +44,7 @@
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
     "@types/dotenv": "^8.2.0",
+    "@types/fluent-ffmpeg": "^2.1.24",
     "@types/jest": "^29.5.11",
     "@types/pdf-parse": "^1.1.4",
     "@types/xml2js": "^0.4.14",
@@ -58,6 +59,7 @@
     "typescript": "4.9.5"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@nangohq/node": "^0.36.100",
     "@notionhq/client": "^2.2.14",
     "@octokit/auth-oauth-user": "^4.0.1",
@@ -66,6 +68,7 @@
     "cheerio": "^1.0.0-rc.12",
     "confluence.js": "^1.7.2",
     "dotenv": "^16.4.1",
+    "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
     "glob": "^10.3.10",
     "googleapis": "^131.0.0",
@@ -73,6 +76,7 @@
     "mammoth": "^1.6.0",
     "node-html-parser": "^6.1.12",
     "octokit": "^3.1.2",
+    "openai": "^4.28.4",
     "pdf-parse": "^1.1.1",
     "puppeteer": "^21.10.0",
     "scrapingbee": "^1.7.4",
