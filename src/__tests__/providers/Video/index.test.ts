@@ -7,7 +7,8 @@ describe("VideoDataProvider", () => {
     const videoDataConnector = createDataConnector({ provider: "video" });
     const optionsURLs = {
       urls: [
-        "https://storage.mendable.ai/Rafa%20Copil_649259965/318247278_conversation_sample_1080p__mp4__1080p_.mp4"
+        "https://storage.mendable.ai/Rafa%20Copil_649259965/318247278_conversation_sample_1080p__mp4__1080p_.mp4",
+        "https://storage.mendable.ai/Rafa%20Copil_592375078/449543075_pedro1.mp4"
       ]
     }
 
@@ -15,7 +16,7 @@ describe("VideoDataProvider", () => {
 
     const documents = await videoDataConnector.getDocuments();
     expect(documents).not.toBe(null);
-    expect(documents.length).toBe(1);
+    expect(documents.length).toBe(2);
     expect(documents[0].content).not.toBe(null);
     expect(documents[0].content.length).toBeGreaterThan(0);
     expect(documents[0].content).toMatch(
@@ -24,5 +25,5 @@ describe("VideoDataProvider", () => {
     expect(documents[0].metadata).toEqual({ sourceURL: optionsURLs.urls[0] });
     expect(documents[0].provider).toBe("video");
     expect(documents[0].type).toBe("video");
-  });
+  }, 60 * 1000 /* 60 seconds */);
 });

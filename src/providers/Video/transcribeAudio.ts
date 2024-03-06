@@ -12,25 +12,31 @@ const openai = new OpenAI({
 });
 
 export const transcribeAudio = async (audioBuffer: ArrayBuffer): Promise<string> => {
-  const MAX_CHUNK_SIZE = 25 * 1024 * 1024; // 25 MB in bytes
+  const MAX_CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB in bytes
   let transcription = '';
 
-  const chunks = splitAudioBuffer(audioBuffer, MAX_CHUNK_SIZE);
+  try {
+    const chunks = await splitAudioBuffer(audioBuffer, MAX_CHUNK_SIZE);
 
-  for (let chunk of chunks) {
-    const audioFilePath = await convertChunkToAudioData(chunk);
-    const response = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(audioFilePath),
-      model: "whisper-1",
-    });
-    
-    transcription += response.text;
+    for (let chunk of chunks) {
+      const audioFilePath = await convertChunkToAudioData(chunk);
+      const response = await openai.audio.transcriptions.create({
+        file: fs.createReadStream(audioFilePath),
+        model: "whisper-1",
+      });
+      
+      transcription += response.text;
+      await fs.promises.unlink(audioFilePath).catch(console.error);
+    }
+  } catch (error) {
+    console.error("Error during transcription process:", error);
+    throw error; // Rethrow the error after logging it
   }
 
   return transcription.trim();
 };
 
-function splitAudioBuffer(buffer: ArrayBuffer, maxChunkSize: number): ArrayBuffer[] {
+async function splitAudioBuffer(buffer: ArrayBuffer, maxChunkSize: number): Promise<ArrayBuffer[]> {
   const chunks: ArrayBuffer[] = [];
   let offset = 0;
 
@@ -45,26 +51,30 @@ function splitAudioBuffer(buffer: ArrayBuffer, maxChunkSize: number): ArrayBuffe
 }
 
 async function convertChunkToAudioData(chunk: ArrayBuffer): Promise<string> {
-  return new Promise((resolve, reject) => {
+  let tempFilePath = '';
+  try {
     const buffer = Buffer.from(chunk);
-    const tempFilePath = path.join(os.tmpdir(), `temp-audio.flac`);
+    tempFilePath = path.join(os.tmpdir(), `temp-audio.mp3`);
     const writable = fs.createWriteStream(tempFilePath);
-    const readable = new Readable();
+    const readable = new Readable({
+      read() {
+        this.push(buffer);
+        this.push(null); // EOF
+      }
+    });
 
-    readable._read = () => {}; // No-op
-    readable.push(buffer);
-    readable.push(null); // EOF
+    await new Promise((resolve, reject) => {
+      ffmpeg(readable)
+        .inputFormat('mp3')
+        .toFormat('mp3')
+        .on('error', reject)
+        .on('end', resolve)
+        .pipe(writable);
+    });
 
-    ffmpeg(readable)
-      .inputFormat('mp3')
-      .toFormat('flac')
-      .on('error', (err) => {
-        reject(err);
-      })
-      .on('end', () => {
-        console.log('File has been converted successfully');
-        resolve(tempFilePath); // Resolve with the file path instead of the data
-      })
-      .pipe(writable);
-  });
+    return tempFilePath;
+  } catch (error) {
+    console.error("Error in convertChunkToAudioData:", error);
+    throw error;
+  }
 }

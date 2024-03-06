@@ -3,6 +3,7 @@ import { Document } from "../../entities/Document";
 import { Progress } from "../../entities/Progress";
 import { transformVideoToAudio } from "./transformVideoToAudio";
 import { transcribeAudio } from "./transcribeAudio";
+import { fetchAndProcessVideo } from "./fetchAndProcessVideo";
 
 export type VideoFileInputOptions = {
   urls?: string[];
@@ -31,16 +32,9 @@ export class VideoFileDataProvider implements DataProvider<VideoFileInputOptions
       }
 
       try {
-        const response = await fetch(this.urls[i]);
-        if (response.ok) {
-          const videoBuffer = await response.arrayBuffer();
-          const audio = await transformVideoToAudio(videoBuffer);
-          content = await transcribeAudio(audio);
-        } else {
-          throw new Error(
-            `Error fetching URL ${this.urls[i]}: ${response.statusText}`
-          );
-        }
+        const videoBuffer = await fetchAndProcessVideo(this.urls[i]);
+        const audio = await transformVideoToAudio(videoBuffer);
+        content = await transcribeAudio(audio);
       } catch (error) {
         throw new Error(`Error fetching URL ${this.urls[i]}: ${error}`);
       }
