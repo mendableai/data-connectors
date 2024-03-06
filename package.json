@@ -13,6 +13,7 @@
     "build-tsup": "tsup",
     "pre-publish": "npm run test",
     "publish": "npm run build-tsup && npm publish --access public",
+    "beta-publish": "npm run build-tsup && npm publish --tag beta --access public",
     "format": "prettier --write \"src/**/*.(js|ts)\"",
     "lint": "eslint src --ext .js,.ts",
     "lint:fix": "eslint src --fix --ext .js,.ts",

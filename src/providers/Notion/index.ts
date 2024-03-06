@@ -1,5 +1,5 @@
 import { Nango } from "@nangohq/node";
-import { Client } from "@notionhq/client";
+import { APIErrorCode, Client } from "@notionhq/client";
 import { DataProvider } from "../DataProvider";
 import { Document } from "../../entities/Document";
 import { NangoAuthorizationOptions } from "../GoogleDrive";
@@ -10,6 +10,7 @@ import {
   RichTextItemResponse,
   SearchResponse,
 } from "@notionhq/client/build/src/api-endpoints";
+import rateLimitDelay from "../../utils/RateLimitDelay";
 
 export type NotionInputOptions = object;
 
@@ -50,11 +51,19 @@ async function recursiveBlockChildren(
 ): Promise<NotionBlockWithChildren[]> {
   const blocks: NotionBlockWithChildren[] = [];
   let req: ListBlockChildrenResponse;
-  const i = 0;
 
   do {
-    req = await notion.blocks.children.list({ block_id });
-
+    try {
+      req = await notion.blocks.children.list({ block_id });
+    } catch (error) {
+      if (error.code === APIErrorCode.RateLimited) {
+        await rateLimitDelay(error.headers.get("retry-after"));
+        continue;
+      }
+      // Handle other errors
+      console.error("Error occurred:", error);
+      break; // Exit the loop if an error occurs
+    }
     const results = req.results as BlockObjectResponse[];
 
     for (const block of results) {
@@ -68,7 +77,7 @@ async function recursiveBlockChildren(
           : [],
       });
     }
-  } while (req.has_more);
+  } while (req && req.has_more);
 
   return blocks;
 }
@@ -312,14 +321,24 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
     let req: SearchResponse = undefined;
 
     do {
-      req = await this.notion.search({
-        start_cursor: req?.next_cursor,
-        filter: {
-          property: "object",
-          value: "page",
-        },
-        page_size: 100,
-      });
+      try {
+        req = await this.notion.search({
+          start_cursor: req?.next_cursor,
+          filter: {
+            property: "object",
+            value: "page",
+          },
+          page_size: 100,
+        });
+      } catch (error) {
+        if (error.code === APIErrorCode.RateLimited) {
+          await rateLimitDelay(error.headers.get("retry-after"));
+          continue;
+        }
+
+        console.error("Error occurred:", error);
+        break;
+      }
 
       const pages = req.results.filter(
         (x) => x.object === "page"
@@ -335,7 +354,7 @@ export class NotionDataProvider implements DataProvider<NotionOptions> {
       );
 
       all.push(...pagesWithBlocks);
-    } while (req.has_more);
+    } while (req && req.has_more);
 
     const pages = all.map(({ page, blocks }) => {
       return {
