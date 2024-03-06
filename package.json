@@ -1,6 +1,5 @@
 {
   "name": "@mendable/data-connectors",
-  "version": "0.0.39-beta.5",
   "version": "0.0.43",
   "description": "Data connectors for LLMs. Made by Mendable.ai",
   "main": "dist/index.js",
