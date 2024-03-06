@@ -45,10 +45,22 @@ export async function scrapSingleUrl(urlToScrap: string): Promise<Document> {
     }
 
     const soup = cheerio.load(content);
-    soup("script").remove();
-    soup("style").remove();
+    soup("script, style, iframe, noscript").remove();
+    let formattedText = '';
+    soup('body').children().each(function() {
+      const tagName = this.tagName.toLowerCase();
+      if (["p", "br", "h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName)) {
+        formattedText += `${soup(this).text()}\n`;
+      } else if (tagName === 'pre' || tagName === 'code' || tagName === 'span') {
+        formattedText += `${soup(this).text()}`;
+      } else {
+        let text = soup(this).text();
+        text = text.split('\n').map(line => line.replace(/\s+/g, ' ').trim()).join('\n').replace(/\n{3,}/g, '\n\n');
+        formattedText += `${text} `;
+      }
+    });
 
-    const text = sanitizeText(soup.text());
+    const text = sanitizeText(formattedText.trim());
     const metadata = extractMetadata(soup, urlToScrap);
 
     if (metadata) {

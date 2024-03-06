@@ -1,6 +1,6 @@
 {
   "name": "@mendable/data-connectors",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "description": "Data connectors for LLMs. Made by Mendable.ai",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -21,7 +21,8 @@
     "prepare": "npm run build",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "run-example": "npx ts-node src/example.ts"
   },
   "repository": {
     "type": "git",
