@@ -1,6 +1,6 @@
 {
   "name": "@mendable/data-connectors",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "description": "Data connectors for LLMs. Made by Mendable.ai",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -77,7 +77,7 @@
     "mammoth": "^1.6.0",
     "node-html-parser": "^6.1.12",
     "octokit": "^3.1.2",
-    "openai": "^4.28.4",
+    "openai": "^4.13.0",
     "pdf-parse": "^1.1.1",
     "puppeteer": "^21.10.0",
     "scrapingbee": "^1.7.4",
