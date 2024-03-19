@@ -52,8 +52,13 @@ export class ZendeskReader {
 
       for (const article of articles) {
         if (article.body == null) continue;
-
-        const bodyText = parse(article.body).text;
+        let bodyText = article.body;
+        try {
+        bodyText = parse(article.body).text ?? article.body;
+        } catch (error) {
+          bodyText = article.body;
+          
+        }
         results.push({
           text: bodyText,
           extra_info: {
