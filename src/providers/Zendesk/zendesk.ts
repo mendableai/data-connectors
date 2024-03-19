@@ -81,6 +81,7 @@ export class ZendeskReader {
 
     const firstPage = await this.getArticlesPage({ locale, next_page: null });
     next_page = firstPage.next_page;
+    articles = articles.concat(firstPage.articles);
 
     while (next_page != null) {
       const page = await this.getArticlesPage({ locale, next_page });
@@ -105,7 +106,6 @@ export class ZendeskReader {
     }
 
     const response = await axios.get(url);
-
     const articlesPage = {
       articles: response.data.articles,
       next_page: response.data.links.next,
