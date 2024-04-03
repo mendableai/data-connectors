@@ -65,6 +65,7 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
           content,
           metadata: {
             sourceURL: "#FILE_" + randomNumber.toString(),
+            title: this.files[i].includes('/') ? this.files[i].split('/').pop() : this.files[i],
           },
           provider: "file",
           type: fileType,
@@ -108,6 +109,7 @@ export class FileDataProvider implements DataProvider<FileInputOptions> {
           content,
           metadata: {
             sourceURL: this.urls[i],
+            title: this.urls[i].includes('/') ? this.urls[i].split('/').pop() : this.urls[i],
           },
           provider: "file",
           type: fileType,
