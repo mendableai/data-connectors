@@ -25,33 +25,33 @@ describe("FileDataProvider", () => {
       {
         content:
           "id, column1, column2, column3\n1, test, 11111, test test\n2, test2 test2, 22222, test\n3, test3, 33333, test test test",
-        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/) },
+        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/), title: "test.csv" },
         provider: "file",
         type: "csv",
       },
       {
         content:
           "# This is a test markdown file\n\nThis file is used for testing purposes. Below is a list of items:\n\n- Item 1\n- Item 2\n- Item 3\n\nEnd of file.\n",
-        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/) },
+        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/), title: "test.md" },
         provider: "file",
         type: "md",
       },
       {
         content: expect.stringContaining("Dummy PDF file"),
-        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/) },
+        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/), title: "test.pdf" },
         provider: "file",
         type: "pdf",
       },
       {
         content: "This is a test file.\n",
-        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/) },
+        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/), title: "test.txt" },
         provider: "file",
         type: "txt",
       },
       {
         content:
           '<?xml version="1.0" encoding="UTF-8"?>\n<tests>\n  <test>\n    <id>1</id>\n    <column1>test</column1>\n    <column2>11111</column2>\n    <column3>test test</column3>\n  </test>\n  <test>\n    <id>2</id>\n    <column1>test2 test2</column1>\n    <column2>22222</column2>\n    <column3>test</column3>\n  </test>\n  <test>\n    <id>3</id>\n    <column1>test3</column1>\n    <column2>33333</column2>\n    <column3>test test test</column3>\n  </test>\n</tests>\n',
-        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/) },
+        metadata: { sourceURL: expect.stringMatching(/^#FILE_\d+$/), title: "test.xml" },
         provider: "file",
         type: "xml",
       },
@@ -83,7 +83,7 @@ describe("FileDataProvider", () => {
     expect(documentsByURL).toContainEqual({
       content:
         "id, column1, column2, column3\n1, test, 11111, test test\n2, test2 test2, 22222, test\n3, test3, 33333, test test test\n",
-      metadata: { sourceURL: optionsURLs.urls[0] },
+      metadata: { sourceURL: optionsURLs.urls[0], title: "test.csv" },
       provider: "file",
       type: "csv",
     });
@@ -91,19 +91,19 @@ describe("FileDataProvider", () => {
       content: expect.stringContaining(
         "# This is a test markdown file\n\nThis file is used for testing purposes. Below is a list of items:\n\n- Item 1\n- Item 2\n- Item 3\n\nEnd of file.\n"
       ),
-      metadata: { sourceURL: optionsURLs.urls[1] },
+      metadata: { sourceURL: optionsURLs.urls[1], title: "test.md" },
       provider: "file",
       type: "md",
     });
     expect(documentsByURL).toContainEqual({
       content: expect.stringContaining("Dummy PDF file"),
-      metadata: { sourceURL: optionsURLs.urls[2] },
+      metadata: { sourceURL: optionsURLs.urls[2], title: "test%20%281%29.pdf" },
       provider: "file",
       type: "pdf",
     });
     expect(documentsByURL).toContainEqual({
       content: expect.stringContaining("This is a test file."),
-      metadata: { sourceURL: optionsURLs.urls[3] },
+      metadata: { sourceURL: optionsURLs.urls[3], title: "test.txt" },
       provider: "file",
       type: "txt",
     });
@@ -111,7 +111,7 @@ describe("FileDataProvider", () => {
       content: expect.stringContaining(
         '<?xml version="1.0" encoding="UTF-8"?>\n<tests>\n  <test>\n    <id>1</id>\n    <column1>test</column1>\n    <column2>11111</column2>\n    <column3>test test</column3>\n  </test>\n  <test>\n    <id>2</id>\n    <column1>test2 test2</column1>\n    <column2>22222</column2>\n    <column3>test</column3>\n  </test>\n  <test>\n    <id>3</id>\n    <column1>test3</column1>\n    <column2>33333</column2>\n    <column3>test test test</column3>\n  </test>\n</tests>'
       ),
-      metadata: { sourceURL: optionsURLs.urls[4] },
+      metadata: { sourceURL: optionsURLs.urls[4], title: "test.xml" },
       provider: "file",
       type: "xml",
     });
