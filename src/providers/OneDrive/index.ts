@@ -146,7 +146,7 @@ export class OneDriveDataProvider
     const types: { [ Mime: string ]: {
       type: string,
       convert: boolean,
-      typeOut: "pdf" | "html" | "md",
+      typeOut: "pdf" | "html" | "md" | "txt",
     } } = {
       "application/msword": {
         type: "document",
@@ -238,6 +238,11 @@ export class OneDriveDataProvider
         convert: true,
         typeOut: "pdf",
       },
+      "text/plain": {
+        type: "document",
+        convert: false,
+        typeOut: "txt",
+      }
     };
 
     for (const item of items) {
