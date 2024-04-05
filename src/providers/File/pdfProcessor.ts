@@ -7,12 +7,17 @@ import pdf from "pdf-parse";
 
 dotenv.config();
 
-async function processPdf(file){
-    const fileContent = fs.readFileSync(file);
-    const data = await pdf(fileContent);
-    return data.text;
-  }
+async function processPdf(file) {
+  const fileContent = fs.readFileSync(file);
+  const data = await pdf(fileContent);
+  return data.text;
+}
+
 export async function processPdfToText(filePath: string): Promise<string> {
+  return await processPdfStreamToText(await createReadStream(filePath), filePath);
+}
+
+export async function processPdfStreamToText(stream: NodeJS.ReadableStream, filePath: string): Promise<string> {
   let content = "";
 
   if (process.env.LLAMAPARSE_API_KEY) {
@@ -25,7 +30,7 @@ export async function processPdfToText(filePath: string): Promise<string> {
 
     try {
       const formData = new FormData();
-      formData.append("file", createReadStream(filePath), {
+      formData.append("file", stream, {
         filename: filePath,
         contentType: fileType2,
       });
@@ -76,5 +81,6 @@ export async function processPdfToText(filePath: string): Promise<string> {
   } else {
     content = await processPdf(filePath);
   }
+
   return content;
 }
