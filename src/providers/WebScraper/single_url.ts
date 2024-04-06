@@ -30,7 +30,7 @@ async function scrapWithScrapingBee(url: string): Promise<string | null> {
   }
 }
 
-export async function scrapSingleUrl(urlToScrap: string): Promise<Document> {
+export async function scrapSingleUrl(urlToScrap: string, toMarkdown: boolean = true): Promise<Document> {
   urlToScrap = urlToScrap.trim();
 
   try {
@@ -43,8 +43,20 @@ export async function scrapSingleUrl(urlToScrap: string): Promise<Document> {
       }
       content = res;
     }
+    var TurndownService = require('turndown')
 
-    const soup = cheerio.load(content);
+    const turndownService = new TurndownService();
+    let markdownContent = '';
+    if (toMarkdown) {
+      markdownContent = turndownService.turndown(content);
+    }
+
+
+    const soup2 = cheerio.load(content);
+    const metadata = extractMetadata(soup2, urlToScrap);
+    const soup = cheerio.load(markdownContent);
+
+
     soup("script, style, iframe, noscript").remove();
     let formattedText = '';
     soup('body').children().each(function() {
@@ -61,17 +73,24 @@ export async function scrapSingleUrl(urlToScrap: string): Promise<Document> {
     });
 
     const text = sanitizeText(formattedText.trim());
-    const metadata = extractMetadata(soup, urlToScrap);
 
     if (metadata) {
+      console.log(markdownContent)
+      console.log("here", toMarkdown)
       return {
         content: text,
         provider: "web-scraper",
         metadata: { ...metadata, sourceURL: urlToScrap },
       } as Document;
+    } else {
+      return {
+        content: text,
+        provider: "web-scraper",
+        metadata: { sourceURL: urlToScrap },
+      } as Document;
     }
     return {
-      content: text,
+      content: markdownContent,
       provider: "web-scraper",
       metadata: { sourceURL: urlToScrap },
     } as Document;

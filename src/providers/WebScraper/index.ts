@@ -47,7 +47,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     for (let i = 0; i < urls.length; i += this.concurrentRequests) {
       const batchUrls = urls.slice(i, i + this.concurrentRequests);
       await Promise.all(batchUrls.map(async (url, index) => {
-        const result = await scrapSingleUrl(url);
+        const result = await scrapSingleUrl(url, true);
         processedUrls++;
         if (inProgress) {
           inProgress({
