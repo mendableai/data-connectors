@@ -14,31 +14,35 @@ export class WebCrawler {
   private maxCrawledLinks: number;
   private visited: Set<string> = new Set();
   private crawledUrls: Set<string> = new Set();
+  private limit: number;
 
   constructor({
     initialUrl,
     includes,
     excludes,
     maxCrawledLinks = 1000,
+    limit = 10000,
   }: {
     initialUrl: string;
     includes?: string[];
     excludes?: string[];
     maxCrawledLinks?: number;
+    limit?: number;
   }) {
     this.initialUrl = initialUrl;
     this.baseUrl = new URL(initialUrl).origin; // Initialize the base URL
     this.includes = includes ?? [];
     this.excludes = excludes ?? [];
     this.maxCrawledLinks = maxCrawledLinks;
+    this.limit = limit;
   }
 
-  public async start(inProgress?: (progress: Progress) => void, concurrencyLimit: number = 5): Promise<string[]> {
+  public async start(inProgress?: (progress: Progress) => void, concurrencyLimit: number = 5, limit: number = 10000): Promise<string[]> {
     // Attempt to fetch and return sitemap links before any crawling
     const sitemapLinks = await this.tryFetchSitemapLinks(this.initialUrl);
     if (sitemapLinks.length > 0) {
       //   console.log('Sitemap found, returning sitemap links.');
-      return sitemapLinks;
+      return sitemapLinks.slice(0, limit);
     }
     // Proceed with crawling if no sitemap links found
     return await this.crawlUrls([this.initialUrl], concurrencyLimit, inProgress);
@@ -50,7 +54,7 @@ export class WebCrawler {
     inProgress?: (progress: Progress) => void
   ): Promise<string[]> {
     const queue = async.queue(async (task: string, callback) => {
-      if (this.crawledUrls.size >= this.maxCrawledLinks) {
+      if (this.crawledUrls.size >= this.maxCrawledLinks ) {
         callback();
         return;
       }
