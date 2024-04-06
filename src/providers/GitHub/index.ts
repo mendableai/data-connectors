@@ -46,6 +46,11 @@ export type GitHubInputOptions = {
    * If specified, only the files in this directory (and subdirectories) will be retrieved.
    */
   path?: string;
+
+  /**
+   * If specified, files in these subpaths will be excluded from retrieval.
+   */
+  excludePaths?: string[];
 };
 
 export type GitHubAuthorizationOptions = {
@@ -76,6 +81,7 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
   private branch?: string;
   private docOnly: boolean;
   private path?: string;
+  private excludePaths?: string[];
 
   /**
    * Due to agressive rate limiting, it is strongly recommended to authorize the GitHub Data Provider.
@@ -166,6 +172,14 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
           relative && !relative.startsWith("..") && !path.isAbsolute(relative)
         );
       });
+    }
+
+    if (this.excludePaths && this.excludePaths.length > 0) {
+      files = files.filter((file) => 
+        !this.excludePaths.some((excludePath) => 
+          file.path.startsWith(excludePath)
+        )
+      );
     }
 
     if (this.docOnly) {
@@ -259,5 +273,6 @@ export class GitHubDataProvider implements DataProvider<GitHubOptions> {
     this.branch = options.branch ?? undefined; // normalize non-specified value to always be undefined
     this.docOnly = options.docOnly ?? false;
     this.path = options.path ?? undefined; // normalize non-specified value to always be undefined
+    this.excludePaths = options.excludePaths ?? []; // normalize non-specified value to always be an empty array
   }
 }
