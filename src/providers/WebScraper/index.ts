@@ -14,6 +14,8 @@ export type WebScraperOptions = {
     includes?: string[];
     excludes?: string[];
     maxCrawledLinks?: number;
+    limit?: number;
+
   };
   concurrentRequests?: number;
 };
@@ -24,6 +26,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
   private excludes: string[];
   private maxCrawledLinks: number;
   private returnOnlyUrls: boolean;
+  private limit: number = 10000;
   private concurrentRequests: number = 20;
 
   authorize(): void {
@@ -44,7 +47,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     for (let i = 0; i < urls.length; i += this.concurrentRequests) {
       const batchUrls = urls.slice(i, i + this.concurrentRequests);
       await Promise.all(batchUrls.map(async (url, index) => {
-        const result = await scrapSingleUrl(url);
+        const result = await scrapSingleUrl(url, true);
         processedUrls++;
         if (inProgress) {
           inProgress({
@@ -72,8 +75,9 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
         includes: this.includes,
         excludes: this.excludes,
         maxCrawledLinks: this.maxCrawledLinks,
+        limit: this.limit,
       });
-      const links = await crawler.start(inProgress);
+      const links = await crawler.start(inProgress,5,this.limit);
       if (this.returnOnlyUrls) {
         return links.map((url) => ({
           content: "",
@@ -91,7 +95,7 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     if (this.mode === "sitemap") {
       const links = await getLinksFromSitemap(this.urls[0]);
       console.log(`Found ${links.length} urls in sitemap`);
-      return this.convertUrlsToDocuments(links, inProgress);
+      return this.convertUrlsToDocuments(links.slice(0, this.limit), inProgress);
     }
 
     throw new Error("Method not implemented.");
@@ -108,5 +112,6 @@ export class WebScraperDataProvider implements DataProvider<WebScraperOptions> {
     this.excludes = options.crawlerOptions?.excludes ?? [];
     this.maxCrawledLinks = options.crawlerOptions?.maxCrawledLinks ?? 1000;
     this.returnOnlyUrls = options.crawlerOptions?.returnOnlyUrls ?? false;
+    this.limit = options.crawlerOptions?.limit ?? 10000;
   }
 }
