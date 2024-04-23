@@ -26,6 +26,7 @@ import {
   NotionDataProvider,
   NotionInputOptions,
 } from "./Notion";
+import { OneDriveAuthorizationOptions, OneDriveDataProvider, OneDriveInputOptions } from "./OneDrive";
 import { SalesforceDataProvider, SalesforceInputOptions } from "./Salesforce";
 import { TextDataProvider, TextInputOptions } from "./Text";
 import { VideoFileDataProvider, VideoFileInputOptions } from "./Video";
@@ -50,6 +51,7 @@ export const providers: Provider = {
   jira: new JiraDataProvider(),
   salesforce: new SalesforceDataProvider(),
   "video": new VideoFileDataProvider(),
+  "one-drive": new OneDriveDataProvider(),
 };
 
 // Define a single source of truth for all providers and their associated types
@@ -126,6 +128,12 @@ type ProviderConfig = {
     AuthorizeOptions: VideoFileInputOptions;
     NangoAuthorizeOptions: NangoAuthorizationOptions;
   };
+  "one-drive": {
+    DataProvider: OneDriveDataProvider;
+    Options: OneDriveInputOptions;
+    AuthorizeOptions: OneDriveAuthorizationOptions;
+    NangoAuthorizeOptions: NangoAuthorizationOptions;
+  }
   // Add other providers here...
 };
 
