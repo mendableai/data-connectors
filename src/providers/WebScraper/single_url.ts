@@ -35,6 +35,8 @@ export async function scrapSingleUrl(urlToScrap: string, toMarkdown: boolean = t
 
   try {
     let content = await scrapWithScrapingBee(urlToScrap);
+  
+  
 
     if (!content) {
       const res = await attemptScrapWithRequests(urlToScrap);
@@ -72,7 +74,13 @@ export async function scrapSingleUrl(urlToScrap: string, toMarkdown: boolean = t
       }
     });
 
+    if (formattedText.length < 1) {
+      formattedText = markdownContent;
+    }
+
     const text = sanitizeText(formattedText.trim());
+
+    
 
     if (metadata) {
       // console.log(markdownContent)
