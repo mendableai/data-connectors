@@ -3,6 +3,7 @@ import { Document } from "../../entities/Document";
 import { YoutubeTranscript } from "youtube-transcript";
 // import puppeteer from "puppeteer";
 import { Progress } from "../../entities/Progress";
+import he from 'he';
 
 export type YouTubeInputOptions = {
   urls: string[];
@@ -42,10 +43,12 @@ export class YouTubeDataProvider implements DataProvider<YouTubeInputOptions> {
 
       let content = "";
       try {
-        const data = await YoutubeTranscript.fetchTranscript(this.urls[i]);
+        const data = await YoutubeTranscript.fetchTranscript(this.urls[i], { lang: "en" });
         for (const item of data) {
-          content += item.text + " \n";
+          content += he.decode(item.text) + " \n";
         }
+
+        content = he.decode(content);
 
         documents.push({
           content: content.replace(/  +/g, " ").trim(),

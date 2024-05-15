@@ -75,8 +75,8 @@ export async function scrapSingleUrl(urlToScrap: string, toMarkdown: boolean = t
     const text = sanitizeText(formattedText.trim());
 
     if (metadata) {
-      console.log(markdownContent)
-      console.log("here", toMarkdown)
+      // console.log(markdownContent)
+      // console.log("here", toMarkdown)
       return {
         content: text,
         provider: "web-scraper",

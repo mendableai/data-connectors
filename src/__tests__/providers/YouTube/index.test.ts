@@ -32,5 +32,5 @@ describe("YouTubeDataProvider", () => {
       "and that's pretty much all there is to"
     );
     expect(documents[0].content.toLowerCase()).toContain("say");
-  });
+  }, 60000);
 });
