@@ -123,6 +123,7 @@ export class Document {
         [key: string]: any; // Any additional metadata associated with the document
     }
 }
+
 ```
 
 ### Contributors
